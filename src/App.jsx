@@ -100,6 +100,7 @@ function App() {
   });
 
   const [formStatus, setFormStatus] = useState("idle");
+  const [whatsappUrl, setWhatsappUrl] = useState("");
 
   /*
    * ======================================================
@@ -280,24 +281,51 @@ function App() {
     }
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const { name, phone, email, goal } = formData;
+    const { name, phone, email, goal, message } = formData;
 
-    if (!name.trim() || !phone.trim() || !email.trim() || !goal) {
+    if (
+      !name.trim() ||
+      !phone.trim() ||
+      !email.trim() ||
+      !goal ||
+      !message.trim()
+    ) {
       setFormStatus("error");
       return;
     }
 
-    console.log("Demo enquiry submitted:", {
-      name,
-      phone,
-      email,
-      goal,
-    });
+    setFormStatus("sending");
 
-    setFormStatus("success");
+    try {
+      const response = await fetch("/api/send-lead", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: name.trim(),
+          phone: phone.trim(),
+          email: email.trim(),
+          projectType: goal,
+          message: message.trim(),
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || "Unable to send your enquiry.");
+      }
+
+      setWhatsappUrl(result.whatsappUrl || "");
+      setFormStatus("success");
+    } catch (error) {
+      console.error("Lead enquiry failed:", error);
+      setFormStatus("error");
+    }
   };
 
   const resetForm = () => {
@@ -306,8 +334,10 @@ function App() {
       phone: "",
       email: "",
       goal: "",
+      message: "",
     });
 
+    setWhatsappUrl("");
     setFormStatus("idle");
   };
 
@@ -1165,14 +1195,13 @@ function App() {
               </label>
 
               <label>
-                Your Goal
+                Project Type
 
                 <select
                   name="goal"
                   value={formData.goal}
                   onChange={handleChange}
                 >
-
                   <option
                     value=""
                     disabled
@@ -1195,15 +1224,33 @@ function App() {
                   <option value="Local business website">
                     Local business website
                   </option>
-
                 </select>
+              </label>
 
+              <label>
+                Project Requirements
+
+                <textarea
+                  name="message"
+                  value={formData.message}
+                  onChange={handleChange}
+                  placeholder="Tell me what you want the website to do..."
+                  rows="5"
+                />
               </label>
 
               {formStatus === "error" && (
 
                 <p className="form-message form-message-error">
-                  Please complete every field before submitting.
+                  Please complete every field and try again.
+                </p>
+
+              )}
+
+              {formStatus === "sending" && (
+
+                <p className="form-message">
+                  Sending your enquiry...
                 </p>
 
               )}
@@ -1213,14 +1260,24 @@ function App() {
                 <div className="form-success">
 
                   <strong>
-                    ENQUIRY RECEIVED.
+                    ENQUIRY SENT.
                   </strong>
 
                   <span>
-                    Thanks, {formData.name}. Your project enquiry demo has been
-                    captured. Connect this form to your preferred email, form
-                    backend, or WhatsApp workflow before publishing.
+                    Thanks, {formData.name}. Your enquiry has been emailed to the
+                    business. You can also continue the conversation on WhatsApp.
                   </span>
+
+                  {whatsappUrl && (
+                    <a
+                      className="button button-primary"
+                      href={whatsappUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      Continue on WhatsApp <span>↗</span>
+                    </a>
+                  )}
 
                   <button
                     type="button"
@@ -1233,7 +1290,7 @@ function App() {
 
               )}
 
-              {formStatus !== "success" && (
+              {formStatus !== "success" && formStatus !== "sending" && (
 
                 <button
                   type="submit"
