@@ -369,6 +369,13 @@ function App() {
             aria-label="Main navigation"
           >
             <a
+              href="#case-study"
+              onClick={closeMenu}
+            >
+              Case Study
+            </a>
+
+            <a
               href="#programs"
               onClick={closeMenu}
             >
@@ -400,10 +407,12 @@ function App() {
           <div className="nav-actions">
 
             <a
-              href="#contact"
+              href={githubUrl}
               className="nav-cta"
+              target="_blank"
+              rel="noreferrer"
             >
-              Free Trial
+              View Source
             </a>
 
             <button
@@ -512,6 +521,104 @@ function App() {
           <div className="hero-scroll">
             <span>SCROLL TO EXPLORE</span>
             <span className="scroll-line" />
+          </div>
+        </section>
+
+        {/* PORTFOLIO CASE STUDY */}
+
+        <section
+          className="portfolio-case-study section"
+          id="case-study"
+        >
+          <div className="container">
+            <div
+              className="portfolio-case-study-header"
+              data-reveal="fade-up"
+            >
+              <div>
+                <p className="section-label">
+                  PROJECT SPOTLIGHT / CLIENT-READY DEMO
+                </p>
+
+                <h2>
+                  IRONCORE <em>FITNESS.</em>
+                </h2>
+              </div>
+
+              <p className="portfolio-case-study-intro">
+                A premium business website concept built to show potential
+                clients what a modern, conversion-focused local business site
+                can look and feel like.
+              </p>
+            </div>
+
+            <div className="portfolio-project-grid">
+              <article className="portfolio-project-card" data-reveal="fade-up">
+                <span>01 / PURPOSE</span>
+                <h3>Turn attention into enquiries.</h3>
+                <p>
+                  Clear messaging, service highlights, social proof, pricing,
+                  strong calls to action, and a focused enquiry flow.
+                </p>
+              </article>
+
+              <article
+                className="portfolio-project-card"
+                data-reveal="fade-up"
+                data-reveal-delay="100"
+              >
+                <span>02 / BUILD</span>
+                <h3>Modern frontend, responsive by default.</h3>
+                <p>
+                  React + Vite, responsive layouts, mobile navigation,
+                  motion, hover states, and accessible form controls.
+                </p>
+              </article>
+
+              <article
+                className="portfolio-project-card"
+                data-reveal="fade-up"
+                data-reveal-delay="200"
+              >
+                <span>03 / DELIVERY</span>
+                <h3>Ready for a real business.</h3>
+                <p>
+                  The concept can be adapted for gyms, restaurants, salons,
+                  local services, consultants, creators, and other businesses.
+                </p>
+              </article>
+            </div>
+
+            <div
+              className="portfolio-project-meta"
+              data-reveal="fade-up"
+              data-reveal-delay="160"
+            >
+              <div className="portfolio-tech">
+                <span>React</span>
+                <span>Vite</span>
+                <span>Responsive UI</span>
+                <span>Vercel-ready</span>
+              </div>
+
+              <div className="portfolio-project-actions">
+                <a
+                  href={githubUrl}
+                  className="text-link"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  View source on GitHub <span>↗</span>
+                </a>
+
+                <a
+                  href="#hire"
+                  className="button button-primary"
+                >
+                  Build one like this <span>↗</span>
+                </a>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -877,6 +984,61 @@ function App() {
           </div>
         </section>
 
+        {/* HIRE ME */}
+
+        <section
+          className="portfolio-hire section"
+          id="hire"
+        >
+          <div
+            className="container portfolio-hire-inner"
+            data-reveal="fade-up"
+          >
+            <p className="section-label">
+              07 / WEBSITE SERVICES
+            </p>
+
+            <h2>
+              NEED A WEBSITE
+              <br />
+              <em>LIKE THIS?</em>
+            </h2>
+
+            <p>
+              I build modern, responsive business websites designed to make
+              your brand look credible, explain your offer clearly, and turn
+              visitors into enquiries.
+            </p>
+
+            <div className="portfolio-service-list">
+              <span>Business Websites</span>
+              <span>Landing Pages</span>
+              <span>Local Business Sites</span>
+              <span>Portfolio Websites</span>
+              <span>Responsive Design</span>
+              <span>Deployment</span>
+            </div>
+
+            <div className="portfolio-hire-actions">
+              <a
+                href="#contact"
+                className="button button-primary"
+              >
+                Start a Project <span>↗</span>
+              </a>
+
+              <a
+                href={githubUrl}
+                className="button button-secondary"
+                target="_blank"
+                rel="noreferrer"
+              >
+                View GitHub <span>↗</span>
+              </a>
+            </div>
+          </div>
+        </section>
+
         {/* CONTACT */}
 
         <section
@@ -890,35 +1052,35 @@ function App() {
             >
 
               <p className="section-label">
-                07 / CONTACT
+                08 / PROJECT ENQUIRY
               </p>
 
               <h2>
-                LET'S GET
+                LET'S BUILD YOUR
                 <br />
-                <em>STARTED.</em>
+                <em>WEBSITE.</em>
               </h2>
 
               <div className="contact-details">
 
                 <div>
-                  <span>VISIT US</span>
+                  <span>WHAT I BUILD</span>
                   <strong>
-                    Banjara Hills, Hyderabad
+                    Business websites · Landing pages
                   </strong>
                 </div>
 
                 <div>
-                  <span>CALL</span>
+                  <span>STACK</span>
                   <strong>
-                    +91 90000 00000
+                    React · Vite · Responsive UI
                   </strong>
                 </div>
 
                 <div>
-                  <span>HOURS</span>
+                  <span>PROCESS</span>
                   <strong>
-                    05:30 AM — 10:00 PM
+                    Design · Develop · Deploy
                   </strong>
                 </div>
 
@@ -990,23 +1152,23 @@ function App() {
                     value=""
                     disabled
                   >
-                    Select your primary goal
+                    Select the type of website
                   </option>
 
-                  <option value="Build muscle">
-                    Build muscle
+                  <option value="Business website">
+                    Business website
                   </option>
 
-                  <option value="Lose fat">
-                    Lose fat
+                  <option value="Landing page">
+                    Landing page
                   </option>
 
-                  <option value="Improve fitness">
-                    Improve fitness
+                  <option value="Portfolio website">
+                    Portfolio website
                   </option>
 
-                  <option value="Personal training">
-                    Personal training
+                  <option value="Local business website">
+                    Local business website
                   </option>
 
                 </select>
@@ -1030,8 +1192,9 @@ function App() {
                   </strong>
 
                   <span>
-                    Thanks, {formData.name}. Your free-trial request has been
-                    received.
+                    Thanks, {formData.name}. Your project enquiry demo has been
+                    captured. Connect this form to your preferred email, form
+                    backend, or WhatsApp workflow before publishing.
                   </span>
 
                   <button
@@ -1051,7 +1214,7 @@ function App() {
                   type="submit"
                   className="button button-primary form-button"
                 >
-                  Book My Free Trial <span>↗</span>
+                  Send Project Enquiry <span>↗</span>
                 </button>
 
               )}
@@ -1078,12 +1241,22 @@ function App() {
           </div>
 
           <p>
-            © 2026 IronCore Fitness Studio. Demo website.
+            © 2026 IronCore Fitness website concept. Built by Ashok.
           </p>
 
-          <a href="#home">
-            Back to top ↑
-          </a>
+          <div className="footer-links">
+            <a
+              href={githubUrl}
+              target="_blank"
+              rel="noreferrer"
+            >
+              View GitHub ↗
+            </a>
+
+            <a href="#home">
+              Back to top ↑
+            </a>
+          </div>
 
         </div>
       </footer>
@@ -1092,10 +1265,10 @@ function App() {
 
       <a
         className="whatsapp"
-        href="#contact"
-        aria-label="Book a free trial"
+        href="#hire"
+        aria-label="Need a website like this?"
       >
-        Free Trial
+        Need a Website?
       </a>
 
     </div>
