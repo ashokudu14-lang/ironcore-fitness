@@ -7,9 +7,12 @@ export default async function handler(req, res) {
 
   const apiKey = process.env.RESEND_API_KEY;
   const notificationEmail = process.env.LEAD_NOTIFICATION_EMAIL;
-  const businessWhatsapp = String(
+  const rawWhatsapp = String(
     process.env.BUSINESS_WHATSAPP_NUMBER || ""
   ).replace(/\D/g, "");
+
+  const businessWhatsapp =
+    rawWhatsapp.length === 10 ? `91${rawWhatsapp}` : rawWhatsapp;
 
   if (!apiKey || !notificationEmail || !businessWhatsapp) {
     console.error("Lead notification environment variables are missing.");
