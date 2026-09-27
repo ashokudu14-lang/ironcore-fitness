@@ -927,7 +927,8 @@ h1 span {
 }
 
 .contact-form input,
-.contact-form select {
+.contact-form select,
+.contact-form textarea {
   width: 100%;
   min-height: 55px;
   padding: 0 17px;
@@ -939,16 +940,30 @@ h1 span {
 }
 
 .contact-form input:focus,
-.contact-form select:focus {
+.contact-form select:focus,
+.contact-form textarea:focus {
   border-color: #c7ff42;
 }
 
-.contact-form input::placeholder {
+.contact-form input::placeholder,
+.contact-form textarea::placeholder {
   color: #5d5d57;
 }
 
 .contact-form select {
   appearance: none;
+}
+
+.contact-form textarea {
+  min-height: 130px;
+  padding: 15px 17px;
+  resize: vertical;
+  line-height: 1.6;
+  border: 1px solid #2d2d28;
+  outline: none;
+  background: #171713;
+  color: #f5f3ef;
+  transition: border-color 180ms ease;
 }
 
 .form-button {
