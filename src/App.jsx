@@ -9,21 +9,33 @@ const programs = [
     number: "01",
     title: "Strength Training",
     text: "Build serious strength and muscle with structured programs designed around your goals.",
+    image:
+      "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=1400&q=85",
+    alt: "Athlete training with weights in a gym",
   },
   {
     number: "02",
     title: "Fat Loss",
     text: "Train smarter, move better, and build sustainable habits without crash diets.",
+    image:
+      "https://images.unsplash.com/photo-1675026482188-8102367ecc16?auto=format&fit=crop&w=1400&q=85",
+    alt: "Woman doing cardio training in a modern gym",
   },
   {
     number: "03",
     title: "Personal Training",
     text: "One-on-one coaching, personalized programming, and accountability every step of the way.",
+    image:
+      "https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?auto=format&fit=crop&w=1400&q=85",
+    alt: "Personal training session in a gym",
   },
   {
     number: "04",
     title: "Group Classes",
     text: "High-energy sessions built to keep you consistent, challenged, and connected.",
+    image:
+      "https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=1400&q=85",
+    alt: "Group fitness class training together",
   },
 ];
 
@@ -710,6 +722,16 @@ function App() {
 
                   <div className="program-arrow">
                     ↗
+                  </div>
+
+                  <div className="program-image-wrap">
+                    <img
+                      className="program-image"
+                      src={program.image}
+                      alt={program.alt}
+                      loading="lazy"
+                    />
+                    <div className="program-image-overlay" />
                   </div>
 
                   <div className="program-content">
