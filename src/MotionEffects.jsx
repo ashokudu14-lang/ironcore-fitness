@@ -1,3 +1,4 @@
+import { Children, cloneElement, isValidElement, useEffect, useRef } from "react";
 import { motion, useMotionValue, useReducedMotion, useSpring, useTransform } from "motion/react";
 
 const elements = { a: motion.a, button: motion.button, article: motion.article, div: motion.div, section: motion.section };
@@ -54,4 +55,107 @@ export function SpringCard({ as = "article", tilt: _tilt, ...props }) {
 
 export function BannerMotion({ as = "section", ...props }) {
   return <GlassSurface as={as} variant="banner" {...props} />;
+}
+
+
+// Wrap text through React so form updates and reconciliation retain ownership.
+function proximityWords(children) {
+  return Children.map(children, child => {
+    if (typeof child === "string" || typeof child === "number") {
+      return String(child).split(/(\s+)/).map((word, index) =>
+        !word.trim() ? word : <ic-word key={index}>{word}</ic-word>);
+    }
+    if (!isValidElement(child) || !child.props.children || child.props["aria-hidden"] === true ||
+        ["svg", "select", "option", "textarea", "script", "style", "ic-word"].includes(child.type)) return child;
+    return cloneElement(child, {}, proximityWords(child.props.children));
+  });
+}
+
+export function WordField({ children }) {
+  const root = useRef(null);
+  const reduced = useReducedMotion();
+  useEffect(() => {
+    if (reduced || !window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+    const words = Array.from(root.current.querySelectorAll("ic-word"));
+    let frame = 0;
+    let pointer = null;
+    let affected = new Set();
+    const resetWord = word => {
+      word.style.removeProperty("--word-rx");
+      word.style.removeProperty("--word-ry");
+      word.style.removeProperty("--word-rz");
+    };
+    const update = () => {
+      frame = 0;
+      if (!pointer) return;
+      // Read geometry first; apply styles afterwards to avoid layout thrashing.
+      const nearby = [];
+      for (const word of words) {
+        const rect = word.getBoundingClientRect();
+        if (rect.bottom < 0 || rect.top > window.innerHeight || !rect.width) continue;
+        const dx = pointer.x - (rect.left + rect.width / 2);
+        const dy = pointer.y - (rect.top + rect.height / 2);
+        const edgeX = Math.max(0, Math.abs(dx) - rect.width / 2);
+        const edgeY = Math.max(0, Math.abs(dy) - rect.height / 2);
+        const distance = Math.hypot(edgeX, edgeY);
+        const radius = 100;
+        if (distance >= radius) continue;
+        const weight = (1 - distance / radius) ** 2;
+        nearby.push({ word, rx: -clamp(dy / 100) * 4 * weight,
+          ry: clamp(dx / 100) * 4 * weight, rz: clamp(dx / 100) * .8 * weight });
+      }
+      const next = new Set(nearby.map(item => item.word));
+      affected.forEach(word => { if (!next.has(word)) resetWord(word); });
+      nearby.forEach(({ word, rx, ry, rz }) => {
+        word.style.setProperty("--word-rx", `${rx}deg`);
+        word.style.setProperty("--word-ry", `${ry}deg`);
+        word.style.setProperty("--word-rz", `${rz}deg`);
+      });
+      affected = next;
+    };
+    const schedule = () => { if (!frame) frame = requestAnimationFrame(update); };
+    const move = event => { if (event.pointerType === "mouse") { pointer = { x: event.clientX, y: event.clientY }; schedule(); } };
+    const leave = () => { pointer = null; cancelAnimationFrame(frame); frame = 0; affected.forEach(resetWord); affected.clear(); };
+    window.addEventListener("pointermove", move, { passive: true });
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule, { passive: true });
+    window.addEventListener("blur", leave);
+    document.documentElement.addEventListener("pointerleave", leave);
+    return () => {
+      leave(); window.removeEventListener("pointermove", move);
+      window.removeEventListener("scroll", schedule); window.removeEventListener("resize", schedule);
+      window.removeEventListener("blur", leave); document.documentElement.removeEventListener("pointerleave", leave);
+    };
+  }, [children, reduced]);
+  return <div ref={root} className="word-field">{proximityWords(children)}</div>;
+}
+
+export function CursorAtmosphere() {
+  const reduced = useReducedMotion();
+  const targetX = useMotionValue(-100);
+  const targetY = useMotionValue(-100);
+  const active = useMotionValue(0);
+  const x = useSpring(targetX, { stiffness: 360, damping: 34, mass: .5 });
+  const y = useSpring(targetY, { stiffness: 360, damping: 34, mass: .5 });
+  const opacity = useSpring(active, { stiffness: 220, damping: 28 });
+  useEffect(() => {
+    if (reduced || !window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+    const move = event => {
+      if (event.pointerType !== "mouse") return;
+      if (!active.get()) { x.jump(event.clientX); y.jump(event.clientY); }
+      targetX.set(event.clientX); targetY.set(event.clientY); active.set(1);
+    };
+    const leave = () => active.set(0);
+    window.addEventListener("pointermove", move, { passive: true });
+    window.addEventListener("blur", leave);
+    document.documentElement.addEventListener("pointerleave", leave);
+    return () => {
+      window.removeEventListener("pointermove", move); window.removeEventListener("blur", leave);
+      document.documentElement.removeEventListener("pointerleave", leave);
+    };
+  }, [reduced, targetX, targetY, x, y, active]);
+  return <div aria-hidden="true">
+    {!reduced && <motion.div className="premium-cursor" style={{ x, y, opacity }} />}
+    <div className="premium-orbits"><div className="premium-orbit orbit-one" /><div className="premium-orbit orbit-two" /></div>
+  </div>;
 }

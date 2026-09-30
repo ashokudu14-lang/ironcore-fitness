@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { animate, inView, useReducedMotion } from "motion/react";
-import { GlassSurface, BannerMotion, SpringCard } from "./MotionEffects";
+import { GlassSurface, BannerMotion, SpringCard, WordField, CursorAtmosphere } from "./MotionEffects";
 import "./index.css";
 
 const githubUrl = "https://github.com/ashokudu14-lang/ironcore-fitness";
@@ -183,7 +183,8 @@ function App() {
   };
 
   return (
-    <div className="site">
+    <WordField><div className="site">
+      <CursorAtmosphere />
 
 
 
@@ -1115,7 +1116,7 @@ function App() {
         Need a Website?
       </GlassSurface>
 
-    </div>
+    </div></WordField>
   );
 }
 
