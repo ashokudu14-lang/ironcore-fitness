@@ -2469,3 +2469,22 @@ h1 span {
     gap: 14px;
   }
 }
+
+/* Motion owns transforms; reveal translation stays independent of spring tilt. */
+[data-reveal] { opacity: 1; transform: none; transition: none; will-change: auto; }
+.motion-glow { left: -215px; top: -215px; transform: none; will-change: transform; }
+.motion-backdrop { transition: none; }
+.hero-image, .why-image-photo { --image-x: 0px; --image-y: 0px; }
+.program-card, .testimonial-card, .pricing-card { transition: border-color 300ms ease, box-shadow 400ms ease; }
+.program-card:hover, .testimonial-card:hover, .pricing-card:hover { transform: none; }
+.button span, .text-link span { display: inline-block; transition: transform 450ms cubic-bezier(.22,1,.36,1); }
+.button:hover span, .text-link:hover span { transform: translate(3px,-3px); }
+.ambient-orbit { position: absolute; right: -150px; top: 18%; width: 680px; height: 680px; border: 1px solid rgba(199,255,66,.08); border-radius: 50%; animation: motion-orbit 38s linear infinite; }
+.ambient-orbit span { position: absolute; left: -3px; top: 50%; width: 6px; height: 6px; border-radius: 50%; background: #c7ff42; box-shadow: 0 0 24px rgba(199,255,66,.45); }
+@keyframes motion-orbit { to { transform: rotate(360deg); } }
+@media (pointer: coarse), (max-width: 720px) { .motion-glow, .ambient-orbit { display: none; } }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation: none !important; transition-duration: .01ms !important; }
+  [data-reveal] { opacity: 1 !important; translate: none !important; scale: 1 !important; }
+}

@@ -1,4 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
+import { animate, inView, useReducedMotion } from "motion/react";
+import { AmbientMotion, SpringCard } from "./MotionEffects";
 import "./index.css";
 
 const githubUrl = "https://github.com/ashokudu14-lang/ironcore-fitness";
@@ -55,28 +57,7 @@ const testimonials = [
 ];
 
 function App() {
-  const target = useRef({
-    x: window.innerWidth / 2,
-    y: window.innerHeight / 2,
-  });
-
-  const current = useRef({
-    x: window.innerWidth / 2,
-    y: window.innerHeight / 2,
-  });
-
-  const frame = useRef(null);
-
-  const [cursor, setCursor] = useState({
-    x: -200,
-    y: -200,
-    tiltX: 0,
-    tiltY: 0,
-    pageX: 0,
-    pageY: 0,
-  });
-
-  const [interactive, setInteractive] = useState(false);
+  const reduced = useReducedMotion();
   const [menuOpen, setMenuOpen] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -88,133 +69,32 @@ function App() {
 
   const [formStatus, setFormStatus] = useState("idle");
 
-  /*
-   * ======================================================
-   * CURSOR + PARALLAX
-   * ======================================================
-   */
-
   useEffect(() => {
-    const move = (event) => {
-      target.current.x = event.clientX;
-      target.current.y = event.clientY;
-    };
-
-    const animate = () => {
-      const dx = target.current.x - current.current.x;
-      const dy = target.current.y - current.current.y;
-
-      current.current.x += dx * 0.12;
-      current.current.y += dy * 0.12;
-
-      const tiltY = Math.max(-7, Math.min(7, dx * 0.035));
-      const tiltX = Math.max(-7, Math.min(7, dy * -0.035));
-
-      const normalizedX =
-        current.current.x / Math.max(window.innerWidth, 1);
-
-      const normalizedY =
-        current.current.y / Math.max(window.innerHeight, 1);
-
-      const pageX = (normalizedX - 0.5) * 18;
-      const pageY = (normalizedY - 0.5) * 14;
-
-      setCursor({
-        x: current.current.x,
-        y: current.current.y,
-        tiltX,
-        tiltY,
-        pageX,
-        pageY,
-      });
-
-      frame.current = requestAnimationFrame(animate);
-    };
-
-    window.addEventListener("mousemove", move);
-    frame.current = requestAnimationFrame(animate);
-
-    return () => {
-      window.removeEventListener("mousemove", move);
-
-      if (frame.current) {
-        cancelAnimationFrame(frame.current);
-      }
-    };
-  }, []);
-
-  /*
-   * ======================================================
-   * INTERACTIVE ELEMENTS
-   * ======================================================
-   */
-
-  useEffect(() => {
-    const elements = document.querySelectorAll(
-      "a, button, input, select, textarea"
-    );
-
-    const enter = () => setInteractive(true);
-    const leave = () => setInteractive(false);
-
-    elements.forEach((element) => {
-      element.addEventListener("mouseenter", enter);
-      element.addEventListener("mouseleave", leave);
-    });
-
-    return () => {
+    const elements = document.querySelectorAll("[data-reveal]");
+    const animations = [];
+    if (reduced) {
       elements.forEach((element) => {
-        element.removeEventListener("mouseenter", enter);
-        element.removeEventListener("mouseleave", leave);
+        element.style.opacity = "1";
+        element.style.translate = "none";
+        element.style.scale = "1";
       });
-    };
-  }, [formStatus, menuOpen]);
-
-  /*
-   * ======================================================
-   * SCROLL REVEAL
-   * ======================================================
-   */
-
-  useEffect(() => {
-    const revealElements = document.querySelectorAll(
-      "[data-reveal]"
-    );
-
-    if (!("IntersectionObserver" in window)) {
-      revealElements.forEach((element) => {
-        element.classList.add("is-visible");
-      });
-
       return;
     }
-
-    const observer = new IntersectionObserver(
-      (entries, observerInstance) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) {
-            return;
-          }
-
-          entry.target.classList.add("is-visible");
-
-          observerInstance.unobserve(entry.target);
-        });
-      },
-      {
-        threshold: 0.14,
-        rootMargin: "0px 0px -50px 0px",
-      }
-    );
-
-    revealElements.forEach((element) => {
-      observer.observe(element);
+    elements.forEach((element) => {
+      const kind = element.dataset.reveal;
+      element.style.opacity = "0";
+      element.style.translate = kind === "fade-right" ? "-24px 0px" : "0px 28px";
+      element.style.scale = kind === "scale" ? ".97" : "1";
     });
-
-    return () => {
-      observer.disconnect();
-    };
-  }, []);
+    const stop = inView(elements, (element) => {
+      animations.push(animate(element, { opacity: 1, translate: "0px 0px", scale: 1 }, {
+        duration: .85,
+        delay: Number(element.dataset.revealDelay || 0) / 1000,
+        ease: [.22, 1, .36, 1],
+      }));
+    }, { amount: .12 });
+    return () => { stop(); animations.forEach((animation) => animation.stop()); };
+  }, [reduced]);
 
   /*
    * ======================================================
@@ -298,51 +178,10 @@ function App() {
     setFormStatus("idle");
   };
 
-  const size = interactive ? 145 : 125;
-
   return (
     <div className="site">
 
-      {/* CURSOR ELEVATION */}
-
-      <div
-        className={`cursor-elevation ${
-          interactive ? "cursor-elevation-active" : ""
-        }`}
-        style={{
-          left: `${cursor.x}px`,
-          top: `${cursor.y}px`,
-          width: `${size}px`,
-          height: `${size}px`,
-          "--tilt-x": `${cursor.tiltX}deg`,
-          "--tilt-y": `${cursor.tiltY}deg`,
-        }}
-      />
-
-      {/* AMBIENT LIGHT */}
-
-      <div
-        className="ambient-glow"
-        style={{
-          left: `${cursor.x}px`,
-          top: `${cursor.y}px`,
-        }}
-      />
-
-      {/* BACKGROUND MOTION */}
-
-      <div
-        className="parallax-background"
-        style={{
-          "--parallax-x": `${cursor.pageX}px`,
-          "--parallax-y": `${cursor.pageY}px`,
-        }}
-      >
-        <div className="parallax-orb parallax-orb-one" />
-        <div className="parallax-orb parallax-orb-two" />
-        <div className="parallax-ring parallax-ring-one" />
-        <div className="parallax-ring parallax-ring-two" />
-      </div>
+      <AmbientMotion />
 
       {/* NAVBAR */}
 
@@ -453,10 +292,7 @@ function App() {
         >
           <div
             className="hero-image"
-            style={{
-              "--image-x": `${cursor.pageX * -0.45}px`,
-              "--image-y": `${cursor.pageY * -0.35}px`,
-            }}
+
           />
 
           <div className="hero-overlay" />
@@ -696,7 +532,7 @@ function App() {
 
               {programs.map((program, index) => (
 
-                <article
+                <SpringCard
                   className="program-card"
                   key={program.number}
                   data-reveal="fade-up"
@@ -716,7 +552,7 @@ function App() {
                     <p>{program.text}</p>
                   </div>
 
-                </article>
+                </SpringCard>
 
               ))}
 
@@ -739,10 +575,7 @@ function App() {
             >
               <div
                 className="why-image-photo"
-                style={{
-                  "--image-x": `${cursor.pageX * 0.35}px`,
-                  "--image-y": `${cursor.pageY * 0.28}px`,
-                }}
+
               />
 
               <div className="why-image-overlay" />
@@ -839,7 +672,7 @@ function App() {
 
             </div>
 
-            <div
+            <SpringCard as="div" tilt
               className="pricing-card"
               data-reveal="scale"
               data-reveal-delay="120"
@@ -879,7 +712,7 @@ function App() {
                 Book Free Trial <span>↗</span>
               </a>
 
-            </div>
+            </SpringCard>
 
             <p className="pricing-note">
               No contracts. No pressure. Just 7 days to experience IronCore.
@@ -916,7 +749,7 @@ function App() {
 
               {testimonials.map((item, index) => (
 
-                <article
+                <SpringCard
                   className="testimonial-card"
                   key={item.name}
                   data-reveal="fade-up"
@@ -944,7 +777,7 @@ function App() {
 
                   </div>
 
-                </article>
+                </SpringCard>
 
               ))}
 
