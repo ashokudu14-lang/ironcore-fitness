@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { animate, inView, useReducedMotion } from "motion/react";
-import { AmbientMotion, BannerMotion, SpringCard } from "./MotionEffects";
+import { GlassSurface, BannerMotion, SpringCard } from "./MotionEffects";
 import "./index.css";
 
 const githubUrl = "https://github.com/ashokudu14-lang/ironcore-fitness";
@@ -185,14 +185,14 @@ function App() {
   return (
     <div className="site">
 
-      <AmbientMotion />
+
 
       {/* NAVBAR */}
 
       <header className="navbar">
         <div className="container nav-inner">
 
-          <a
+          <GlassSurface as="a" variant="control"
             href="#home"
             className="brand"
             onClick={closeMenu}
@@ -203,7 +203,7 @@ function App() {
               <strong>IRONCORE</strong>
               <small>FITNESS STUDIO</small>
             </span>
-          </a>
+          </GlassSurface>
 
           <nav
             className={`nav-links ${
@@ -213,54 +213,54 @@ function App() {
             }`}
             aria-label="Main navigation"
           >
-            <a
+            <GlassSurface as="a" variant="control"
               href="#case-study"
               onClick={closeMenu}
             >
               Case Study
-            </a>
+            </GlassSurface>
 
-            <a
+            <GlassSurface as="a" variant="control"
               href="#programs"
               onClick={closeMenu}
             >
               Programs
-            </a>
+            </GlassSurface>
 
-            <a
+            <GlassSurface as="a" variant="control"
               href="#why-us"
               onClick={closeMenu}
             >
               Why Us
-            </a>
+            </GlassSurface>
 
-            <a
+            <GlassSurface as="a" variant="control"
               href="#membership"
               onClick={closeMenu}
             >
               Membership
-            </a>
+            </GlassSurface>
 
-            <a
+            <GlassSurface as="a" variant="control"
               href="#contact"
               onClick={closeMenu}
             >
               Contact
-            </a>
+            </GlassSurface>
           </nav>
 
           <div className="nav-actions">
 
-            <a
+            <GlassSurface as="a" variant="control"
               href={githubUrl}
               className="nav-cta"
               target="_blank"
               rel="noreferrer"
             >
               View Source
-            </a>
+            </GlassSurface>
 
-            <button
+            <GlassSurface as="button" variant="control"
               type="button"
               className={`mobile-menu-button ${
                 menuOpen
@@ -279,7 +279,7 @@ function App() {
             >
               <span />
               <span />
-            </button>
+            </GlassSurface>
 
           </div>
 
@@ -325,19 +325,19 @@ function App() {
               </p>
 
               <div className="hero-actions">
-                <a
+                <GlassSurface as="a" variant="control"
                   href="#contact"
                   className="button button-primary"
                 >
                   Book Your Free Trial <span>↗</span>
-                </a>
+                </GlassSurface>
 
-                <a
+                <GlassSurface as="a" variant="control"
                   href="#programs"
                   className="button button-secondary"
                 >
                   Explore Programs
-                </a>
+                </GlassSurface>
               </div>
 
               <div className="hero-trust">
@@ -368,7 +368,7 @@ function App() {
 
         {/* PORTFOLIO CASE STUDY */}
 
-        <section
+        <BannerMotion
           className="portfolio-case-study section"
           id="case-study"
         >
@@ -395,16 +395,16 @@ function App() {
             </div>
 
             <div className="portfolio-project-grid">
-              <article className="portfolio-project-card" data-reveal="fade-up">
+              <SpringCard className="portfolio-project-card" data-reveal="fade-up">
                 <span>01 / PURPOSE</span>
                 <h3>Turn attention into enquiries.</h3>
                 <p>
                   Clear messaging, service highlights, social proof, pricing,
                   strong calls to action, and a focused enquiry flow.
                 </p>
-              </article>
+              </SpringCard>
 
-              <article
+              <SpringCard
                 className="portfolio-project-card"
                 data-reveal="fade-up"
                 data-reveal-delay="100"
@@ -415,9 +415,9 @@ function App() {
                   React + Vite, responsive layouts, mobile navigation,
                   motion, hover states, and accessible form controls.
                 </p>
-              </article>
+              </SpringCard>
 
-              <article
+              <SpringCard
                 className="portfolio-project-card"
                 data-reveal="fade-up"
                 data-reveal-delay="200"
@@ -428,7 +428,7 @@ function App() {
                   The concept can be adapted for gyms, restaurants, salons,
                   local services, consultants, creators, and other businesses.
                 </p>
-              </article>
+              </SpringCard>
             </div>
 
             <div
@@ -444,29 +444,29 @@ function App() {
               </div>
 
               <div className="portfolio-project-actions">
-                <a
+                <GlassSurface as="a" variant="control"
                   href={githubUrl}
                   className="text-link"
                   target="_blank"
                   rel="noreferrer"
                 >
                   View source on GitHub <span>↗</span>
-                </a>
+                </GlassSurface>
 
-                <a
+                <GlassSurface as="a" variant="control"
                   href="#hire"
                   className="button button-primary"
                 >
                   Build one like this <span>↗</span>
-                </a>
+                </GlassSurface>
               </div>
             </div>
           </div>
-        </section>
+        </BannerMotion>
 
         {/* INTRO */}
 
-        <section className="intro section">
+        <BannerMotion className="intro section">
           <div className="container intro-grid">
 
             <div data-reveal="fade-up">
@@ -499,11 +499,11 @@ function App() {
             </div>
 
           </div>
-        </section>
+        </BannerMotion>
 
         {/* PROGRAMS */}
 
-        <section
+        <BannerMotion
           className="programs section"
           id="programs"
         >
@@ -567,11 +567,11 @@ function App() {
             </div>
 
           </div>
-        </section>
+        </BannerMotion>
 
         {/* WHY US */}
 
-        <section
+        <BannerMotion
           className="why-us section"
           id="why-us"
         >
@@ -620,7 +620,7 @@ function App() {
 
                 {benefits.map((benefit, index) => (
 
-                  <div
+                  <SpringCard as="div"
                     className="benefit"
                     key={benefit}
                     data-reveal="fade-right"
@@ -628,27 +628,27 @@ function App() {
                   >
                     <span>0{index + 1}</span>
                     <strong>{benefit}</strong>
-                  </div>
+                  </SpringCard>
 
                 ))}
 
               </div>
 
-              <a
+              <GlassSurface as="a" variant="control"
                 href="#contact"
                 className="text-link"
               >
                 Meet IronCore <span>↗</span>
-              </a>
+              </GlassSurface>
 
             </div>
 
           </div>
-        </section>
+        </BannerMotion>
 
         {/* MEMBERSHIP */}
 
-        <section
+        <BannerMotion
           className="membership section"
           id="membership"
         >
@@ -713,12 +713,12 @@ function App() {
                 <span>✓ No joining fee</span>
               </div>
 
-              <a
+              <GlassSurface as="a" variant="control"
                 href="#contact"
                 className="button button-primary"
               >
                 Book Free Trial <span>↗</span>
-              </a>
+              </GlassSurface>
 
             </SpringCard>
 
@@ -727,11 +727,11 @@ function App() {
             </p>
 
           </div>
-        </section>
+        </BannerMotion>
 
         {/* TESTIMONIALS */}
 
-        <section className="testimonials section">
+        <BannerMotion className="testimonials section">
           <div className="container">
 
             <div
@@ -792,7 +792,7 @@ function App() {
             </div>
 
           </div>
-        </section>
+        </BannerMotion>
 
         {/* FINAL CTA */}
 
@@ -818,19 +818,19 @@ function App() {
               and train.
             </p>
 
-            <a
+            <GlassSurface as="a" variant="control"
               href="#contact"
               className="button button-primary"
             >
               Book Your Free Trial <span>↗</span>
-            </a>
+            </GlassSurface>
 
           </div>
         </BannerMotion>
 
         {/* HIRE ME */}
 
-        <section
+        <BannerMotion
           className="portfolio-hire section"
           id="hire"
         >
@@ -864,28 +864,28 @@ function App() {
             </div>
 
             <div className="portfolio-hire-actions">
-              <a
+              <GlassSurface as="a" variant="control"
                 href="#contact"
                 className="button button-primary"
               >
                 Start a Project <span>↗</span>
-              </a>
+              </GlassSurface>
 
-              <a
+              <GlassSurface as="a" variant="control"
                 href={githubUrl}
                 className="button button-secondary"
                 target="_blank"
                 rel="noreferrer"
               >
                 View GitHub <span>↗</span>
-              </a>
+              </GlassSurface>
             </div>
           </div>
-        </section>
+        </BannerMotion>
 
         {/* CONTACT */}
 
-        <section
+        <BannerMotion
           className="contact section"
           id="contact"
         >
@@ -1041,12 +1041,12 @@ function App() {
                     backend, or WhatsApp workflow before publishing.
                   </span>
 
-                  <button
+                  <GlassSurface as="button" variant="control"
                     type="button"
                     onClick={resetForm}
                   >
                     Submit another enquiry
-                  </button>
+                  </GlassSurface>
 
                 </div>
 
@@ -1054,19 +1054,19 @@ function App() {
 
               {formStatus !== "success" && (
 
-                <button
+                <GlassSurface as="button" variant="control"
                   type="submit"
                   className="button button-primary form-button"
                 >
                   Send Project Enquiry <span>↗</span>
-                </button>
+                </GlassSurface>
 
               )}
 
             </form>
 
           </div>
-        </section>
+        </BannerMotion>
 
       </main>
 
@@ -1089,17 +1089,17 @@ function App() {
           </p>
 
           <div className="footer-links">
-            <a
+            <GlassSurface as="a" variant="control"
               href={githubUrl}
               target="_blank"
               rel="noreferrer"
             >
               View GitHub ↗
-            </a>
+            </GlassSurface>
 
-            <a href="#home">
+            <GlassSurface as="a" variant="control" href="#home">
               Back to top ↑
-            </a>
+            </GlassSurface>
           </div>
 
         </div>
@@ -1107,13 +1107,13 @@ function App() {
 
       {/* FLOATING CTA */}
 
-      <a
+      <GlassSurface as="a" variant="control"
         className="whatsapp"
         href="#hire"
         aria-label="Need a website like this?"
       >
         Need a Website?
-      </a>
+      </GlassSurface>
 
     </div>
   );
