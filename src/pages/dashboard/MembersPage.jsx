@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import PageTransition from "../../components/motion/PageTransition.jsx";
 import { getCurrentGym } from "../../services/gym.js";
 import { createMember, listMembers } from "../../services/members.js";
-import { listPlans } from "../../services/plans.js";
+import { listActivePlans } from "../../services/plans.js";
 import { createSubscription } from "../../services/subscriptions.js";
 
 const makeInitialForm = () => ({
@@ -35,7 +35,7 @@ export default function MembersPage() {
 
       const [memberRows, planRows] = await Promise.all([
         listMembers(currentGym.id),
-        listPlans(currentGym.id),
+        listActivePlans(currentGym.id),
       ]);
 
       setGym(currentGym);
