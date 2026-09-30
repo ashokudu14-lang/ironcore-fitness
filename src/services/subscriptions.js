@@ -44,6 +44,7 @@ export async function listUpcomingRenewals(gymId, days = 7) {
     .from("subscriptions")
     .select(`
       id,
+      gym_id,
       member_id,
       plan_id,
       start_date,
@@ -65,16 +66,32 @@ export async function listUpcomingRenewals(gymId, days = 7) {
 
 export async function renewSubscription(subscription) {
   const plan = subscription.membership_plans;
-  const startDate = subscription.end_date;
+  const nextStartDate = addDays(subscription.end_date, 1);
 
-  return createSubscription({
-    gymId: subscription.gym_id,
-    memberId: subscription.member_id,
-    plan: {
-      id: subscription.plan_id,
-      duration_days: plan.duration_days,
-      price: plan.price,
-    },
-    startDate,
-  });
+  const { error: updateError } = await supabase
+    .from("subscriptions")
+    .update({ status: "renewed" })
+    .eq("id", subscription.id);
+
+  if (updateError) throw updateError;
+
+  try {
+    return await createSubscription({
+      gymId: subscription.gym_id,
+      memberId: subscription.member_id,
+      plan: {
+        id: subscription.plan_id,
+        duration_days: plan.duration_days,
+        price: plan.price,
+      },
+      startDate: nextStartDate,
+    });
+  } catch (error) {
+    await supabase
+      .from("subscriptions")
+      .update({ status: "active" })
+      .eq("id", subscription.id);
+
+    throw error;
+  }
 }
