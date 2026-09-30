@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { animate, inView, useReducedMotion } from "motion/react";
-import { AmbientMotion, SpringCard } from "./MotionEffects";
+import { AmbientMotion, BannerMotion, SpringCard } from "./MotionEffects";
 import "./index.css";
 
 const githubUrl = "https://github.com/ashokudu14-lang/ironcore-fitness";
@@ -8,21 +8,25 @@ const githubUrl = "https://github.com/ashokudu14-lang/ironcore-fitness";
 const programs = [
   {
     number: "01",
+    image: "photo-1534438327276-14e5300c3a48",
     title: "Strength Training",
     text: "Build serious strength and muscle with structured programs designed around your goals.",
   },
   {
     number: "02",
+    image: "photo-1517836357463-d25dfeac3438",
     title: "Fat Loss",
     text: "Train smarter, move better, and build sustainable habits without crash diets.",
   },
   {
     number: "03",
+    image: "photo-1517836357463-d25dfeac3438",
     title: "Personal Training",
     text: "One-on-one coaching, personalized programming, and accountability every step of the way.",
   },
   {
     number: "04",
+    image: "photo-1534438327276-14e5300c3a48",
     title: "Group Classes",
     text: "High-energy sessions built to keep you consistent, challenged, and connected.",
   },
@@ -286,7 +290,7 @@ function App() {
 
         {/* HERO */}
 
-        <section
+        <BannerMotion
           className="hero"
           id="home"
         >
@@ -360,7 +364,7 @@ function App() {
             <span>SCROLL TO EXPLORE</span>
             <span className="scroll-line" />
           </div>
-        </section>
+        </BannerMotion>
 
         {/* PORTFOLIO CASE STUDY */}
 
@@ -539,6 +543,10 @@ function App() {
                   data-reveal-delay={index * 100}
                 >
 
+                  <div className="program-photo" aria-hidden="true">
+                    <img src={`https://images.unsplash.com/${program.image}?auto=format&fit=crop&w=900&q=80`} alt="" width="900" height="600" loading="lazy" decoding="async" />
+                  </div>
+
                   <span className="program-number">
                     {program.number}
                   </span>
@@ -569,7 +577,7 @@ function App() {
         >
           <div className="container why-grid">
 
-            <div
+            <BannerMotion as="div"
               className="why-image"
               data-reveal="scale"
             >
@@ -584,7 +592,7 @@ function App() {
                 <span>IRONCORE / 2026</span>
                 <span>HYDERABAD</span>
               </div>
-            </div>
+            </BannerMotion>
 
             <div
               className="why-content"
@@ -788,7 +796,8 @@ function App() {
 
         {/* FINAL CTA */}
 
-        <section className="final-cta section">
+        <BannerMotion className="final-cta section">
+          <div className="cta-training-image" aria-hidden="true" />
           <div
             className="container final-cta-inner"
             data-reveal="fade-up"
@@ -817,7 +826,7 @@ function App() {
             </a>
 
           </div>
-        </section>
+        </BannerMotion>
 
         {/* HIRE ME */}
 

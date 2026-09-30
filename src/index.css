@@ -2488,3 +2488,49 @@ h1 span {
   *, *::before, *::after { animation: none !important; transition-duration: .01ms !important; }
   [data-reveal] { opacity: 1 !important; translate: none !important; scale: 1 !important; }
 }
+
+/* Cursor glow is above the photography, with a feathered edge and no pointer capture. */
+.motion-glow {
+  z-index: 30; width: 440px; height: 440px; left: -220px; top: -220px;
+  border: 0; border-radius: 50%; pointer-events: none;
+  background: radial-gradient(circle, rgba(199,255,66,.18) 0%, rgba(199,255,66,.07) 30%, rgba(199,255,66,.018) 53%, transparent 72%);
+  mix-blend-mode: screen; filter: blur(10px); box-shadow: none;
+}
+.hero-image, .why-image-photo, .cta-training-image {
+  animation: none;
+  transform: translate3d(var(--banner-image-x,0px),var(--banner-image-y,0px),0) scale(1.08);
+  transition: none; will-change: transform;
+}
+.hero-copy, .final-cta-inner {
+  transform: translate3d(var(--banner-copy-x,0px),var(--banner-copy-y,0px),0);
+}
+.hero-overlay {
+  background: linear-gradient(90deg,rgba(8,9,7,.94) 0%,rgba(8,9,7,.82) 34%,rgba(8,9,7,.40) 66%,rgba(8,9,7,.28) 100%);
+}
+.cta-training-image {
+  position: absolute; inset: -28px; pointer-events: none; opacity: .14;
+  background: url("https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=1600&q=80") center 60% / cover;
+  mix-blend-mode: multiply;
+}
+.final-cta { overflow: hidden; isolation: isolate; }
+.program-card { min-height: 460px; isolation: isolate; background: #151512; }
+.program-photo { position: absolute; inset: 0; z-index: -1; overflow: hidden; }
+.program-photo img { width: 100%; height: 100%; object-fit: cover; opacity: .48; transition: transform 900ms cubic-bezier(.22,1,.36,1); }
+.program-photo::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg,rgba(8,9,7,.10),rgba(8,9,7,.50) 40%,rgba(8,9,7,.97)); }
+.program-card:hover .program-photo img { transform: scale(1.045); }
+.program-number, .program-arrow, .program-content { position: relative; z-index: 1; }
+.program-card .program-content p { color: #c7c6bf; }
+.program-card:nth-child(2) .program-photo img { object-position: 35% center; }
+.program-card:nth-child(3) .program-photo img { object-position: 65% center; }
+.program-card:nth-child(4) .program-photo img { object-position: right center; }
+@media (max-width: 650px) {
+  .program-card { min-height: 380px; }
+  .hero-overlay { background: linear-gradient(90deg,rgba(8,9,7,.94),rgba(8,9,7,.66)); }
+}
+@media (prefers-reduced-motion: reduce), (pointer: coarse) {
+  .motion-glow { display: none; }
+  .hero-image, .why-image-photo, .cta-training-image { transform: scale(1.05); will-change: auto; }
+  .hero-copy, .final-cta-inner { transform: none; }
+  .program-photo img { transition: none; }
+  .program-card:hover .program-photo img { transform: none; }
+}
