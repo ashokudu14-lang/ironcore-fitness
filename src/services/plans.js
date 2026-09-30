@@ -12,6 +12,18 @@ export async function listPlans(gymId) {
   return data;
 }
 
+export async function listActivePlans(gymId) {
+  const { data, error } = await supabase
+    .from("membership_plans")
+    .select("id, name, duration_days, price, active")
+    .eq("gym_id", gymId)
+    .eq("active", true)
+    .order("price", { ascending: true });
+
+  if (error) throw error;
+  return data;
+}
+
 export async function createPlan(gymId, input) {
   const { data, error } = await supabase
     .from("membership_plans")
