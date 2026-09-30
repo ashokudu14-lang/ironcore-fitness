@@ -27,6 +27,12 @@ jobs:
       - name: Install dependencies
         run: npm install --no-audit --no-fund
 
+      - name: Lockfile snapshot
+        run: |
+          echo "IRONCORE_LOCK_BEGIN"
+          cat package-lock.json
+          echo "IRONCORE_LOCK_END"
+
       - name: Lint
         run: npm run lint
 
