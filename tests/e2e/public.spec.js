@@ -76,10 +76,13 @@ test("reduced motion disables authored transition durations", async ({ browser }
 
   await page.goto("/");
 
-  const duration = await page.locator(".button-primary").first().evaluate((element) => {
-    return getComputedStyle(element).transitionDuration;
+  const durationSeconds = await page.locator(".button-primary").first().evaluate((element) => {
+    const value = getComputedStyle(element).transitionDuration.split(",")[0].trim();
+    return value.endsWith("ms")
+      ? Number.parseFloat(value) / 1000
+      : Number.parseFloat(value);
   });
 
-  expect(duration).toMatch(/0\.01ms|0s/);
+  expect(durationSeconds).toBeLessThanOrEqual(0.00002);
   await context.close();
 });
