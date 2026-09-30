@@ -16,6 +16,8 @@ import AuthPage from "./pages/auth/AuthPage.jsx";
 import OnboardingPage from "./pages/auth/OnboardingPage.jsx";
 import DashboardPage from "./pages/dashboard/DashboardPage.jsx";
 import MembersPage from "./pages/dashboard/MembersPage.jsx";
+import PaymentsPage from "./pages/dashboard/PaymentsPage.jsx";
+import RenewalsPage from "./pages/dashboard/RenewalsPage.jsx";
 import EmptyModulePage from "./pages/dashboard/EmptyModulePage.jsx";
 
 function App() {
@@ -56,26 +58,8 @@ function App() {
         >
           <Route path="/app" element={<DashboardPage />} />
           <Route path="/app/members" element={<MembersPage />} />
-          <Route
-            path="/app/payments"
-            element={
-              <EmptyModulePage
-                title="Payments"
-                description="Record and review gym payments without mixing them with member notes."
-                actionLabel="Record payment"
-              />
-            }
-          />
-          <Route
-            path="/app/renewals"
-            element={
-              <EmptyModulePage
-                title="Renewals"
-                description="Expiring memberships will appear here from real subscription data."
-                actionLabel="Review renewals"
-              />
-            }
-          />
+          <Route path="/app/payments" element={<PaymentsPage />} />
+          <Route path="/app/renewals" element={<RenewalsPage />} />
           <Route
             path="/app/settings"
             element={
