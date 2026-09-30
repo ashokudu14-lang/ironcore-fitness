@@ -213,14 +213,17 @@ export default function CursorInteractionLayer() {
 
       const nx = clamp(((event.clientX - rect.left) / rect.width - 0.5) * 2, -1, 1);
       const ny = clamp(((event.clientY - rect.top) / rect.height - 0.5) * 2, -1, 1);
-      const length = Math.max(Math.hypot(nx, ny), 0.001);
-      const intensity = clamp(length, 0, 1);
+      const rawLength = Math.hypot(nx, ny);
+      const length = Math.max(rawLength, 0.001);
+      const intensity = clamp(rawLength, 0, 1);
+      const axisX = rawLength < 0.001 ? 0 : -ny / length;
+      const axisY = rawLength < 0.001 ? 1 : nx / length;
       const maxTilt = Number(surface.dataset.reactiveTilt || 5);
       const maxMove = Number(surface.dataset.reactiveMove || 3);
       const hoverScale = Number(surface.dataset.reactiveScale || 1.01);
 
-      surface.style.setProperty("--reactive-axis-x", String(-ny / length));
-      surface.style.setProperty("--reactive-axis-y", String(nx / length));
+      surface.style.setProperty("--reactive-axis-x", String(axisX));
+      surface.style.setProperty("--reactive-axis-y", String(axisY));
       surface.style.setProperty(
         "--reactive-angle",
         `${(maxTilt * intensity).toFixed(2)}deg`
