@@ -1,38 +1,51 @@
 import { useEffect, useState } from "react";
 import PageTransition from "../../components/motion/PageTransition.jsx";
 import { getCurrentGym } from "../../services/gym.js";
-import { listUpcomingRenewals } from "../../services/subscriptions.js";
+import {
+  listUpcomingRenewals,
+  renewSubscription,
+} from "../../services/subscriptions.js";
 
 export default function RenewalsPage() {
-  const [gym, setGym] = useState(null);
   const [renewals, setRenewals] = useState([]);
   const [status, setStatus] = useState("loading");
   const [message, setMessage] = useState("");
+  const [renewingId, setRenewingId] = useState("");
+
+  const load = async () => {
+    setStatus("loading");
+    setMessage("");
+
+    try {
+      const currentGym = await getCurrentGym();
+      const rows = await listUpcomingRenewals(currentGym.id, 7);
+      setRenewals(rows);
+      setStatus("ready");
+    } catch (error) {
+      setStatus("error");
+      setMessage(error.message || "Unable to load renewals.");
+    }
+  };
 
   useEffect(() => {
-    let active = true;
-
-    const load = async () => {
-      try {
-        const currentGym = await getCurrentGym();
-        const rows = await listUpcomingRenewals(currentGym.id, 7);
-
-        if (!active) return;
-        setGym(currentGym);
-        setRenewals(rows.map((row) => ({ ...row, gym_id: currentGym.id })));
-        setStatus("ready");
-      } catch (error) {
-        if (!active) return;
-        setStatus("error");
-        setMessage(error.message || "Unable to load renewals.");
-      }
-    };
-
     load();
-    return () => {
-      active = false;
-    };
   }, []);
+
+  const renew = async (renewal) => {
+    setRenewingId(renewal.id);
+    setMessage("");
+
+    try {
+      await renewSubscription(renewal);
+      setRenewals((current) =>
+        current.filter((item) => item.id !== renewal.id),
+      );
+    } catch (error) {
+      setMessage(error.message || "Unable to renew this membership.");
+    } finally {
+      setRenewingId("");
+    }
+  };
 
   return (
     <PageTransition>
@@ -40,7 +53,7 @@ export default function RenewalsPage() {
         <div>
           <span className="eyebrow">Renewals</span>
           <h1>Due in the next 7 days</h1>
-          <p>Use this list to follow up before memberships expire.</p>
+          <p>Follow up before memberships expire, then renew them here.</p>
         </div>
       </div>
 
@@ -64,14 +77,28 @@ export default function RenewalsPage() {
         ) : (
           <div className="member-list">
             {renewals.map((renewal) => (
-              <article className="member-row" key={renewal.id}>
+              <article className="member-row member-row-action" key={renewal.id}>
                 <div>
                   <strong>{renewal.members?.full_name || "Member"}</strong>
                   <span>{renewal.members?.phone || "No phone"}</span>
                 </div>
-                <div>
+
+                <div className="renewal-meta">
                   <strong>{renewal.membership_plans?.name || "Membership"}</strong>
-                  <small>Ends {new Date(renewal.end_date + "T00:00:00").toLocaleDateString()}</small>
+                  <small>
+                    Ends{" "}
+                    {new Date(
+                      renewal.end_date + "T00:00:00",
+                    ).toLocaleDateString()}
+                  </small>
+                  <button
+                    className="button button-secondary button-small"
+                    type="button"
+                    disabled={renewingId === renewal.id}
+                    onClick={() => renew(renewal)}
+                  >
+                    {renewingId === renewal.id ? "Renewing..." : "Renew membership"}
+                  </button>
                 </div>
               </article>
             ))}
