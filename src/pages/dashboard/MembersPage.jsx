@@ -2,34 +2,49 @@ import { useEffect, useState } from "react";
 import PageTransition from "../../components/motion/PageTransition.jsx";
 import { getCurrentGym } from "../../services/gym.js";
 import { createMember, listMembers } from "../../services/members.js";
+import { listPlans } from "../../services/plans.js";
+import { createSubscription } from "../../services/subscriptions.js";
 
-const initialForm = {
+const makeInitialForm = () => ({
   fullName: "",
   phone: "",
   email: "",
   joinedAt: new Date().toISOString().slice(0, 10),
-};
+  planId: "",
+});
 
 export default function MembersPage() {
   const [gym, setGym] = useState(null);
   const [members, setMembers] = useState([]);
-  const [form, setForm] = useState(initialForm);
+  const [plans, setPlans] = useState([]);
+  const [form, setForm] = useState(makeInitialForm());
   const [status, setStatus] = useState("loading");
   const [message, setMessage] = useState("");
 
   const load = async () => {
     setStatus("loading");
+
     try {
       const currentGym = await getCurrentGym();
+
       if (!currentGym) {
         setStatus("error");
         setMessage("No gym workspace found.");
         return;
       }
 
-      const rows = await listMembers(currentGym.id);
+      const [memberRows, planRows] = await Promise.all([
+        listMembers(currentGym.id),
+        listPlans(currentGym.id),
+      ]);
+
       setGym(currentGym);
-      setMembers(rows);
+      setMembers(memberRows);
+      setPlans(planRows);
+      setForm((current) => ({
+        ...current,
+        planId: current.planId || planRows[0]?.id || "",
+      }));
       setStatus("ready");
     } catch (error) {
       setStatus("error");
@@ -55,8 +70,22 @@ export default function MembersPage() {
 
     try {
       const member = await createMember(gym.id, form);
+      const selectedPlan = plans.find((plan) => plan.id === form.planId);
+
+      if (selectedPlan) {
+        await createSubscription({
+          gymId: gym.id,
+          memberId: member.id,
+          plan: selectedPlan,
+          startDate: form.joinedAt,
+        });
+      }
+
       setMembers((current) => [member, ...current]);
-      setForm(initialForm);
+      setForm({
+        ...makeInitialForm(),
+        planId: plans[0]?.id || "",
+      });
       setStatus("ready");
     } catch (error) {
       setStatus("error");
@@ -121,17 +150,32 @@ export default function MembersPage() {
               Full name
               <input name="fullName" value={form.fullName} onChange={update} required />
             </label>
+
             <label>
               Phone
               <input name="phone" value={form.phone} onChange={update} required />
             </label>
+
             <label>
               Email
               <input name="email" type="email" value={form.email} onChange={update} />
             </label>
+
             <label>
               Joined date
               <input name="joinedAt" type="date" value={form.joinedAt} onChange={update} required />
+            </label>
+
+            <label>
+              Membership plan
+              <select name="planId" value={form.planId} onChange={update} required>
+                <option value="">Select plan</option>
+                {plans.map((plan) => (
+                  <option key={plan.id} value={plan.id}>
+                    {plan.name} · {plan.duration_days} days
+                  </option>
+                ))}
+              </select>
             </label>
 
             {message && <p className="form-feedback error">{message}</p>}
@@ -139,7 +183,7 @@ export default function MembersPage() {
             <button
               className="button button-primary"
               type="submit"
-              disabled={!gym || status === "saving"}
+              disabled={!gym || !plans.length || status === "saving"}
             >
               {status === "saving" ? "Adding member..." : "Add member"}
             </button>
