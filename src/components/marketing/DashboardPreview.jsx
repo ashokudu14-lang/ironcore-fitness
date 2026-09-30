@@ -1,6 +1,23 @@
+import { motion, useMotionValue, useSpring, useReducedMotion } from "motion/react";
+
 export default function DashboardPreview() {
+  const reduced = useReducedMotion();
+  const targetX = useMotionValue(0);
+  const targetY = useMotionValue(0);
+  const rotateX = useSpring(targetX, { stiffness: 140, damping: 25 });
+  const rotateY = useSpring(targetY, { stiffness: 140, damping: 25 });
+  const followPointer = (event) => {
+    if (reduced || event.pointerType !== "mouse") return;
+    const bounds = event.currentTarget.getBoundingClientRect();
+    targetX.set(-((event.clientY - bounds.top) / bounds.height - 0.5) * 5);
+    targetY.set(((event.clientX - bounds.left) / bounds.width - 0.5) * 5);
+  };
   return (
-    <div className="dashboard-preview" aria-label="IronCore OS product preview">
+    <motion.div className="dashboard-preview" aria-label="IronCore OS product preview"
+      style={reduced ? undefined : { rotateX, rotateY, transformPerspective: 1200 }}
+      onPointerMove={followPointer}
+      onPointerLeave={() => { targetX.set(0); targetY.set(0); }}
+    >
       <div className="preview-bar">
         <span>Product preview</span>
         <span>Example layout, no customer data</span>
@@ -29,11 +46,16 @@ export default function DashboardPreview() {
               ["Active members", "No data loaded"],
               ["Renewals due", "No data loaded"],
               ["Revenue this month", "No data loaded"],
-            ].map(([label, value]) => (
-              <article className="preview-stat" key={label}>
+            ].map(([label, value], index) => (
+              <motion.article className="preview-stat" key={label}
+                initial={reduced ? false : { opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+                transition={{ duration: 0.65, delay: 0.28 + index * 0.1, ease: [0.22, 1, 0.36, 1] }}
+                whileHover={reduced ? undefined : { y: -3 }}
+              >
                 <span>{label}</span>
                 <strong>{value}</strong>
-              </article>
+              </motion.article>
             ))}
           </div>
 
@@ -49,6 +71,6 @@ export default function DashboardPreview() {
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

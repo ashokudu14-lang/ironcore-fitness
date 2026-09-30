@@ -5,6 +5,7 @@ export default function Reveal({
   children,
   className = "",
   delay = 0,
+  interactive = false,
 }) {
   const reduceMotion = useReducedMotion();
 
@@ -20,6 +21,7 @@ export default function Reveal({
       viewport={{ once: true, amount: 0.18 }}
       variants={fadeUp}
       transition={{ ...motionTiming.standard, delay }}
+      whileHover={interactive ? { y: -6, transition: { type: "spring", stiffness: 260, damping: 24, delay: 0 } } : undefined}
     >
       {children}
     </motion.div>

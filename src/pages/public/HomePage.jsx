@@ -40,6 +40,11 @@ export default function HomePage() {
   return (
     <PageTransition>
       <section className="hero-section">
+        <div className="hero-atmosphere" aria-hidden="true">
+          <div className="hero-orbit orbit-one" />
+          <div className="hero-orbit orbit-two" />
+          <div className="hero-grid-lines" />
+        </div>
         <div className="container hero-grid">
           <div className="hero-copy">
             <span className="eyebrow">Gym management software</span>
@@ -48,8 +53,8 @@ export default function HomePage() {
                 <motion.span
                   className="hero-line"
                   key={line}
-                  initial={reduceMotion ? false : { opacity: 0, y: 18 }}
-                  animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
+                  initial={reduceMotion ? false : { opacity: 0, y: 32, rotateX: 12 }}
+                  animate={reduceMotion ? undefined : { opacity: 1, y: 0, rotateX: 0 }}
                   transition={
                     reduceMotion
                       ? undefined
@@ -86,7 +91,7 @@ export default function HomePage() {
               }
             >
               <Link className="button button-primary" to="/signup">
-                Start free
+                Start free <span aria-hidden="true">↗</span>
               </Link>
               <Link className="button button-secondary" to="/pricing">
                 View pricing
@@ -113,8 +118,8 @@ export default function HomePage() {
 
           <div className="bento-grid">
             {features.map((feature, index) => (
-              <Reveal className={feature.className} delay={index * 0.04} key={feature.title}>
-                <span className="feature-index">0{index + 1}</span>
+              <Reveal className={feature.className} delay={index * 0.08} interactive key={feature.title}>
+                <div className="feature-topline"><span className="feature-index">0{index + 1}</span><span className="feature-arrow" aria-hidden="true">↗</span></div>
                 <h3>{feature.title}</h3>
                 <p>{feature.text}</p>
               </Reveal>

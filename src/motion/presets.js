@@ -1,11 +1,11 @@
 export const motionTiming = {
-  quick: { duration: 0.18, ease: [0.2, 0.8, 0.2, 1] },
-  standard: { duration: 0.24, ease: [0.2, 0.8, 0.2, 1] },
-  intro: { duration: 0.52, ease: [0.2, 0.8, 0.2, 1] },
+  quick: { duration: 0.22, ease: [0.22, 1, 0.36, 1] },
+  standard: { duration: 0.65, ease: [0.22, 1, 0.36, 1] },
+  intro: { duration: 0.9, ease: [0.22, 1, 0.36, 1] },
 };
 
 export const fadeUp = {
-  hidden: { opacity: 0, y: 18 },
+  hidden: { opacity: 0, y: 28 },
   visible: { opacity: 1, y: 0 },
 };
 

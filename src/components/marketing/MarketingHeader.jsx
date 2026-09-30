@@ -1,6 +1,10 @@
+import { motion, useReducedMotion, useScroll, useSpring } from "motion/react";
 import { Link, NavLink } from "react-router-dom";
 
 export default function MarketingHeader() {
+  const reduced = useReducedMotion();
+  const { scrollYProgress } = useScroll();
+  const progress = useSpring(scrollYProgress, { stiffness: 180, damping: 30 });
   return (
     <header className="marketing-header">
       <div className="container header-inner">
@@ -13,8 +17,11 @@ export default function MarketingHeader() {
         </Link>
 
         <nav className="marketing-nav" aria-label="Primary navigation">
-          <NavLink to="/">Product</NavLink>
-          <NavLink to="/pricing">Pricing</NavLink>
+          {[["/", "Product"], ["/pricing", "Pricing"]].map(([to, label]) => (
+            <NavLink key={to} to={to} end>
+              {({ isActive }) => <><span>{label}</span>{isActive && <motion.span className="nav-active-line" layoutId="marketing-nav" transition={reduced ? { duration: 0 } : { type: "spring", stiffness: 320, damping: 30 }} />}</>}
+            </NavLink>
+          ))}
         </nav>
 
         <div className="header-actions">
@@ -22,10 +29,11 @@ export default function MarketingHeader() {
             Log in
           </Link>
           <Link className="button button-primary" to="/signup">
-            Start free
+            Start free <span aria-hidden="true">↗</span>
           </Link>
         </div>
       </div>
+      {!reduced && <motion.div className="reading-progress" style={{ scaleX: progress }} aria-hidden="true" />}
     </header>
   );
 }
