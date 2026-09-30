@@ -1,8 +1,9 @@
-name: Phase 2 checks
+name: IronCore OS checks
 
 on:
   push:
     branches:
+      - main
       - ironcore-os/phase-2
   pull_request:
     branches:
