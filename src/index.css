@@ -2549,3 +2549,8 @@ h1 span {
 .program-card:nth-child(2) .program-photo img, .program-card:nth-child(3) .program-photo img, .program-card:nth-child(4) .program-photo img { object-position: center; }
 @media (pointer: coarse), (max-width: 720px) { .cursor-outline { display: none; } .button:hover,.nav-cta:hover,.whatsapp:hover { transform: none; } }
 @media (prefers-reduced-motion: reduce) { .cursor-outline { display: none; } .button:hover,.nav-cta:hover,.whatsapp:hover { transform: none; } .button::after,.nav-cta::after,.whatsapp::after { display: none; } }
+/* Keep the photo overlay full-frame and the hero headline in clear lines. */
+.hero-overlay { inset: 0; width: auto; height: auto; max-width: none; max-height: none; border: 0; border-radius: 0; box-shadow: none; pointer-events: none; }
+.hero-overlay::after { display: none; }
+.hero h1 span { display: block; }
+.hero .eyebrow { color: #c7ff42; }
