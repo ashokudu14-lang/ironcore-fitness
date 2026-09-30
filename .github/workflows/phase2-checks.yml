@@ -49,6 +49,9 @@ jobs:
       - name: Install application dependencies
         run: npm ci --no-audit --no-fund
 
+      - name: Build application for browser QA
+        run: npm run build
+
       - name: Install browser test dependencies
         run: npm install --no-save @playwright/test@latest @axe-core/playwright@latest
 
