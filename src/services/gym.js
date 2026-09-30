@@ -98,3 +98,21 @@ export async function createGymWorkspace({
 
   return gym;
 }
+
+
+export async function updateGym(gymId, input) {
+  const { data, error } = await supabase
+    .from("gyms")
+    .update({
+      name: input.name,
+      timezone: input.timezone,
+      currency: input.currency,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", gymId)
+    .select("id, name, slug, timezone, currency")
+    .single();
+
+  if (error) throw error;
+  return data;
+}
