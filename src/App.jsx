@@ -8,25 +8,25 @@ const githubUrl = "https://github.com/ashokudu14-lang/ironcore-fitness";
 const programs = [
   {
     number: "01",
-    image: "photo-1534438327276-14e5300c3a48",
+    image: "photo-1683889843003-a4ea8bb8204a",
     title: "Strength Training",
     text: "Build serious strength and muscle with structured programs designed around your goals.",
   },
   {
     number: "02",
-    image: "photo-1517836357463-d25dfeac3438",
+    image: "photo-1790094181226-c7d6e992c0b6",
     title: "Fat Loss",
     text: "Train smarter, move better, and build sustainable habits without crash diets.",
   },
   {
     number: "03",
-    image: "photo-1517836357463-d25dfeac3438",
+    image: "photo-1727848562663-81fec613880c",
     title: "Personal Training",
     text: "One-on-one coaching, personalized programming, and accountability every step of the way.",
   },
   {
     number: "04",
-    image: "photo-1534438327276-14e5300c3a48",
+    image: "photo-1517130038641-a774d04afb3c",
     title: "Group Classes",
     text: "High-energy sessions built to keep you consistent, challenged, and connected.",
   },

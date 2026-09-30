@@ -33,6 +33,7 @@ export function AmbientMotion() {
   if (reduced) return null;
   return <div aria-hidden="true">
     <motion.div className="ambient-glow motion-glow" style={{ x, y, opacity }} />
+    <motion.div className="cursor-outline" style={{ x, y, opacity }}><span /></motion.div>
     <motion.div className="parallax-background motion-backdrop" style={{ x: backdropX, y: backdropY }}>
       <div className="parallax-orb parallax-orb-one" />
       <div className="parallax-orb parallax-orb-two" />

@@ -2509,7 +2509,7 @@ h1 span {
 }
 .cta-training-image {
   position: absolute; inset: -28px; pointer-events: none; opacity: .14;
-  background: url("https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=1600&q=80") center 60% / cover;
+  background: url("https://images.unsplash.com/photo-1614091245074-bbf4d04a3c32?auto=format&fit=crop&w=1600&q=80") center 60% / cover;
   mix-blend-mode: multiply;
 }
 .final-cta { overflow: hidden; isolation: isolate; }
@@ -2534,3 +2534,18 @@ h1 span {
   .program-photo img { transition: none; }
   .program-card:hover .program-photo img { transform: none; }
 }
+
+/* A crisp circle surrounds the feathered cursor light. */
+.cursor-outline { position: fixed; left: 0; top: 0; z-index: 31; pointer-events: none; will-change: transform; }
+.cursor-outline span { display: block; width: 108px; height: 108px; border-radius: 50%; border: 1px solid rgba(199,255,66,.45); transform: translate(-50%,-50%); box-shadow: 0 0 24px rgba(199,255,66,.08), inset 0 0 18px rgba(199,255,66,.035); transition: transform 480ms cubic-bezier(.22,1,.36,1),border-color 240ms ease; }
+.site:has(.button:hover, .nav-cta:hover, button:hover) .cursor-outline span { transform: translate(-50%,-50%) scale(1.12); border-color: rgba(199,255,66,.7); }
+.button, .nav-cta, .whatsapp { position: relative; isolation: isolate; overflow: hidden; transition: transform 450ms cubic-bezier(.2,.9,.25,1.25),box-shadow 400ms ease,background-color 240ms ease; }
+.button::after, .nav-cta::after, .whatsapp::after { content: ""; position: absolute; inset: -60% auto -60% -65%; width: 40%; pointer-events: none; z-index: -1; background: linear-gradient(90deg,transparent,rgba(255,255,255,.65),transparent); transform: skewX(-22deg) translateX(-180%); }
+.button:hover, .nav-cta:hover, .whatsapp:hover { transform: translateY(-3px) scale(1.025); box-shadow: 0 8px 30px rgba(199,255,66,.22); }
+.button:hover::after, .nav-cta:hover::after, .whatsapp:hover::after { animation: button-shine 850ms cubic-bezier(.22,1,.36,1) both; }
+.button:active, .nav-cta:active, .whatsapp:active { transform: translateY(0) scale(.98); }
+.button:focus-visible, .nav-cta:focus-visible, .whatsapp:focus-visible { outline: 2px solid #f5f3ef; outline-offset: 4px; box-shadow: 0 0 26px rgba(199,255,66,.24); }
+@keyframes button-shine { to { transform: skewX(-22deg) translateX(560%); } }
+.program-card:nth-child(2) .program-photo img, .program-card:nth-child(3) .program-photo img, .program-card:nth-child(4) .program-photo img { object-position: center; }
+@media (pointer: coarse), (max-width: 720px) { .cursor-outline { display: none; } .button:hover,.nav-cta:hover,.whatsapp:hover { transform: none; } }
+@media (prefers-reduced-motion: reduce) { .cursor-outline { display: none; } .button:hover,.nav-cta:hover,.whatsapp:hover { transform: none; } .button::after,.nav-cta::after,.whatsapp::after { display: none; } }
