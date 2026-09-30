@@ -1,3 +1,4 @@
+import { CursorFeedback } from "./components/motion/CursorFeedback.jsx";
 import {
   BrowserRouter,
   Navigate,
@@ -23,6 +24,7 @@ import SettingsPage from "./pages/dashboard/SettingsPage.jsx";
 function App() {
   return (
     <BrowserRouter>
+      <CursorFeedback />
       <a className="skip-link" href="#main-content">
         Skip to content
       </a>

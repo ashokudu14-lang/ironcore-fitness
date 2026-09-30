@@ -142,7 +142,7 @@ export default function HomePage() {
               ["03", "Record payments", "Keep payment history attached to the right member."],
               ["04", "Review renewals", "Work through upcoming expiries from one list."],
             ].map(([number, title, text], index) => (
-              <Reveal className="process-item" delay={index * 0.04} key={number}>
+              <Reveal interactive className="process-item" delay={index * 0.04} key={number}>
                 <span>{number}</span>
                 <div>
                   <h3>{title}</h3>

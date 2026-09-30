@@ -1,3 +1,4 @@
+import { withWordMotion } from "../motion/CursorFeedback.jsx";
 import { motion, useReducedMotion, useScroll, useSpring } from "motion/react";
 import { Link, NavLink } from "react-router-dom";
 
@@ -5,7 +6,7 @@ export default function MarketingHeader() {
   const reduced = useReducedMotion();
   const { scrollYProgress } = useScroll();
   const progress = useSpring(scrollYProgress, { stiffness: 180, damping: 30 });
-  return (
+  return withWordMotion(
     <header className="marketing-header">
       <div className="container header-inner">
         <Link className="brand-lockup" to="/" aria-label="IronCore OS home">

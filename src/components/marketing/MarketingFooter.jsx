@@ -1,7 +1,8 @@
+import { withWordMotion } from "../motion/CursorFeedback.jsx";
 import { Link } from "react-router-dom";
 
 export default function MarketingFooter() {
-  return (
+  return withWordMotion(
     <footer className="marketing-footer">
       <div className="container footer-grid">
         <div>

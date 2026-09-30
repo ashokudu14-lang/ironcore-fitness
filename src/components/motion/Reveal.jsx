@@ -1,3 +1,4 @@
+import { usePreviewTilt } from "./CursorFeedback.jsx";
 import { motion, useReducedMotion } from "motion/react";
 import { fadeUp, motionTiming } from "../../motion/presets.js";
 
@@ -8,6 +9,7 @@ export default function Reveal({
   interactive = false,
 }) {
   const reduceMotion = useReducedMotion();
+  const tilt = usePreviewTilt();
 
   if (reduceMotion) {
     return <div className={className}>{children}</div>;
@@ -15,6 +17,7 @@ export default function Reveal({
 
   return (
     <motion.div
+      {...(interactive ? tilt : {})}
       className={className}
       initial="hidden"
       whileInView="visible"

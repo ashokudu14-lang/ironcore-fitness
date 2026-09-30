@@ -1,22 +1,12 @@
-import { motion, useMotionValue, useSpring, useReducedMotion } from "motion/react";
+import { withWordMotion, usePreviewTilt } from "../motion/CursorFeedback.jsx";
+import { motion, useReducedMotion } from "motion/react";
 
 export default function DashboardPreview() {
   const reduced = useReducedMotion();
-  const targetX = useMotionValue(0);
-  const targetY = useMotionValue(0);
-  const rotateX = useSpring(targetX, { stiffness: 140, damping: 25 });
-  const rotateY = useSpring(targetY, { stiffness: 140, damping: 25 });
-  const followPointer = (event) => {
-    if (reduced || event.pointerType !== "mouse") return;
-    const bounds = event.currentTarget.getBoundingClientRect();
-    targetX.set(-((event.clientY - bounds.top) / bounds.height - 0.5) * 5);
-    targetY.set(((event.clientX - bounds.left) / bounds.width - 0.5) * 5);
-  };
-  return (
+  const tilt = usePreviewTilt();
+  return withWordMotion(
     <motion.div className="dashboard-preview" aria-label="IronCore OS product preview"
-      style={reduced ? undefined : { rotateX, rotateY, transformPerspective: 1200 }}
-      onPointerMove={followPointer}
-      onPointerLeave={() => { targetX.set(0); targetY.set(0); }}
+      {...tilt}
     >
       <div className="preview-bar">
         <span>Product preview</span>

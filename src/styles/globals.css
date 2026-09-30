@@ -1304,3 +1304,10 @@ input:focus, textarea:focus, select:focus { border-color: var(--accent); }
 @media (max-width: 980px) { .hero-grid { grid-template-columns: 1fr; } .hero-preview { max-width: 760px; width: 100%; } .hero-copy h1 { max-width: 750px; } }
 @media (max-width: 720px) { .hero-section { padding: 66px 0 56px; } .hero-copy h1 { font-size: clamp(2.8rem,11vw,4.2rem); } .preview-shell { grid-template-columns: 1fr; } .preview-stat-grid { grid-template-columns: 1fr; } .hero-orbit { width: 420px; height: 420px; right: -260px; } .orbit-two { display: none; } .preview-bar { flex-wrap: wrap; gap: 4px; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition-duration: .01ms !important; } .hero-orbit { display: none; } }
+
+/* Pointer interactions share the Product preview spring. Text remains selectable. */
+ic-phrase { display: inline; }
+ic-word { display: inline-block; transform: perspective(700px) rotateX(var(--word-rx,0deg)) rotateY(var(--word-ry,0deg)) rotateZ(var(--word-rz,0deg)); transform-origin: 50% 65%; transition: transform 420ms cubic-bezier(.22,1,.36,1); }
+.premium-cursor { position: fixed; left: -9px; top: -9px; width: 18px; height: 18px; border: 1px solid rgba(199,255,66,.8); border-radius: 50%; z-index: 10000; pointer-events: none; box-shadow: 0 0 12px rgba(199,255,66,.12); }
+@media (pointer: coarse), (hover: none) { .premium-cursor { display: none; } ic-word { transform: none; transition: none; } }
+@media (prefers-reduced-motion: reduce) { .premium-cursor { display: none; } ic-word { transform: none; transition: none; } }

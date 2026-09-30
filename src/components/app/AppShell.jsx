@@ -1,3 +1,4 @@
+import { withWordMotion } from "../motion/CursorFeedback.jsx";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { supabase } from "../../lib/supabaseClient.js";
 
@@ -19,7 +20,7 @@ export default function AppShell() {
     navigate("/login", { replace: true });
   };
 
-  return (
+  return withWordMotion(
     <div className="app-shell">
       <aside className="app-sidebar">
         <NavLink className="brand-lockup app-brand" to="/app">

@@ -1,3 +1,4 @@
+import { withWordMotion } from "./CursorFeedback.jsx";
 import { motion, useReducedMotion } from "motion/react";
 import { motionTiming, pageFade } from "../../motion/presets.js";
 
@@ -5,7 +6,7 @@ export default function PageTransition({ children, className = "" }) {
   const reduceMotion = useReducedMotion();
 
   if (reduceMotion) {
-    return <div className={className}>{children}</div>;
+    return <div className={className}>{withWordMotion(children)}</div>;
   }
 
   return (
@@ -16,7 +17,7 @@ export default function PageTransition({ children, className = "" }) {
       variants={pageFade}
       transition={motionTiming.standard}
     >
-      {children}
+      {withWordMotion(children)}
     </motion.div>
   );
 }
