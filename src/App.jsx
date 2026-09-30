@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import "./index.css";
 
+const githubUrl = "https://github.com/ashokudu14-lang/ironcore-fitness";
+
 const programs = [
   {
     number: "01",
