@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 
 const SURFACE_SELECTOR = [
-  ".marketing-site .dashboard-preview",
   ".marketing-site .preview-stat",
   ".marketing-site .preview-table",
   ".marketing-site .bento-card",
