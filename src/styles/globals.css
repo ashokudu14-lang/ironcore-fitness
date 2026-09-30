@@ -1097,3 +1097,83 @@ textarea::placeholder {
     transition-duration: 0.01ms !important;
   }
 }
+
+
+.form-grid-two {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.module-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(320px, 0.7fr);
+  gap: 12px;
+}
+
+.module-form {
+  display: grid;
+  gap: 16px;
+  padding-top: 22px;
+}
+
+.module-form label {
+  display: grid;
+  gap: 7px;
+  color: var(--text);
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.member-list {
+  display: grid;
+}
+
+.member-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(180px, auto);
+  gap: 24px;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.member-row:last-child {
+  border-bottom: 0;
+}
+
+.member-row > div {
+  display: grid;
+  gap: 2px;
+}
+
+.member-row > div:last-child {
+  justify-items: end;
+  text-align: right;
+}
+
+.member-row span,
+.member-row small {
+  color: var(--text-muted);
+}
+
+.member-row small {
+  text-transform: capitalize;
+}
+
+@media (max-width: 860px) {
+  .module-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .form-grid-two,
+  .member-row {
+    grid-template-columns: 1fr;
+  }
+
+  .member-row > div:last-child {
+    justify-items: start;
+    text-align: left;
+  }
+}
