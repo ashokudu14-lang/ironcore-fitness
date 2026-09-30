@@ -62,8 +62,9 @@ export function BannerMotion({ as = "section", ...props }) {
 function proximityWords(children) {
   return Children.map(children, child => {
     if (typeof child === "string" || typeof child === "number") {
-      return String(child).split(/(\s+)/).map((word, index) =>
-        !word.trim() ? word : <ic-word key={index}>{word}</ic-word>);
+      if (!String(child).trim()) return child;
+      return <ic-phrase>{String(child).split(/(\s+)/).map((word, index) =>
+        !word.trim() ? word : <ic-word key={index}>{word}</ic-word>)}</ic-phrase>;
     }
     if (!isValidElement(child) || !child.props.children || child.props["aria-hidden"] === true ||
         ["svg", "select", "option", "textarea", "script", "style", "ic-word"].includes(child.type)) return child;

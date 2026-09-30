@@ -2542,7 +2542,7 @@ h1 span {
 /* Close-range type follows the pointer without changing text flow or hit areas. */
 ic-word { display: inline-block; transform: perspective(700px) rotateX(var(--word-rx,0deg)) rotateY(var(--word-ry,0deg)) rotateZ(var(--word-rz,0deg)); transform-origin: 50% 65%; transition: transform 420ms cubic-bezier(.22,1,.36,1); }
 .premium-cursor { position: fixed; left: -9px; top: -9px; width: 18px; height: 18px; border: 1px solid rgba(199,255,66,.8); border-radius: 50%; z-index: 100; pointer-events: none; box-shadow: 0 0 12px rgba(199,255,66,.12); }
-.premium-orbits { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+.premium-orbits { position: fixed; inset: 0; z-index: 5; overflow: hidden; pointer-events: none; }
 .premium-orbit { position: absolute; width: min(72vw,950px); aspect-ratio: 1; border-radius: 50%; border: 1px solid rgba(199,255,66,.065); right: -28%; top: 12%; animation: premium-orbit-turn 65s linear infinite; }
 .premium-orbit::before { content: ""; position: absolute; inset: 7%; border-radius: 50%; border: 1px dashed rgba(245,243,239,.045); }
 .premium-orbit::after { content: ""; position: absolute; left: 50%; top: -2px; width: 4px; height: 4px; border-radius: 50%; background: rgba(199,255,66,.5); box-shadow: 0 0 14px rgba(199,255,66,.25); }
@@ -2551,3 +2551,5 @@ ic-word { display: inline-block; transform: perspective(700px) rotateX(var(--wor
 @media (pointer: coarse), (hover: none) { .premium-cursor { display: none; } ic-word { transform: none; transition: none; } }
 @media (max-width: 650px) { .premium-orbit { opacity: .5; } }
 @media (prefers-reduced-motion: reduce) { .premium-cursor { display: none; } .premium-orbit { animation: none; } ic-word { transform: none; transition: none; } }
+
+ic-phrase { display: inline; }
