@@ -25,6 +25,7 @@ for (const route of publicRoutes) {
 
   test(`${route} has no serious accessibility violations`, async ({ page }) => {
     await page.goto(route);
+    await page.waitForTimeout(850);
     const results = await new AxeBuilder({ page })
       .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
       .analyze();
