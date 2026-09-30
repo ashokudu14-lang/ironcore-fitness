@@ -18,7 +18,7 @@ import DashboardPage from "./pages/dashboard/DashboardPage.jsx";
 import MembersPage from "./pages/dashboard/MembersPage.jsx";
 import PaymentsPage from "./pages/dashboard/PaymentsPage.jsx";
 import RenewalsPage from "./pages/dashboard/RenewalsPage.jsx";
-import EmptyModulePage from "./pages/dashboard/EmptyModulePage.jsx";
+import SettingsPage from "./pages/dashboard/SettingsPage.jsx";
 
 function App() {
   return (
@@ -60,16 +60,7 @@ function App() {
           <Route path="/app/members" element={<MembersPage />} />
           <Route path="/app/payments" element={<PaymentsPage />} />
           <Route path="/app/renewals" element={<RenewalsPage />} />
-          <Route
-            path="/app/settings"
-            element={
-              <EmptyModulePage
-                title="Settings"
-                description="Gym details, plans, currency, timezone, and team access will be managed here."
-                actionLabel="Edit gym settings"
-              />
-            }
-          />
+          <Route path="/app/settings" element={<SettingsPage />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />
