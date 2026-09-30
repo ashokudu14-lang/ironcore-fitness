@@ -7,12 +7,15 @@ import {
 import MarketingLayout from "./components/marketing/MarketingLayout.jsx";
 import AppShell from "./components/app/AppShell.jsx";
 import ProtectedRoute from "./app/ProtectedRoute.jsx";
+import GymGate from "./app/GymGate.jsx";
 import HomePage from "./pages/public/HomePage.jsx";
 import PricingPage from "./pages/public/PricingPage.jsx";
 import PrivacyPage from "./pages/public/PrivacyPage.jsx";
 import TermsPage from "./pages/public/TermsPage.jsx";
 import AuthPage from "./pages/auth/AuthPage.jsx";
+import OnboardingPage from "./pages/auth/OnboardingPage.jsx";
 import DashboardPage from "./pages/dashboard/DashboardPage.jsx";
+import MembersPage from "./pages/dashboard/MembersPage.jsx";
 import EmptyModulePage from "./pages/dashboard/EmptyModulePage.jsx";
 
 function App() {
@@ -34,23 +37,25 @@ function App() {
         <Route path="/signup" element={<AuthPage mode="signup" />} />
 
         <Route
+          path="/onboarding"
           element={
             <ProtectedRoute>
-              <AppShell />
+              <OnboardingPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          element={
+            <ProtectedRoute>
+              <GymGate>
+                <AppShell />
+              </GymGate>
             </ProtectedRoute>
           }
         >
           <Route path="/app" element={<DashboardPage />} />
-          <Route
-            path="/app/members"
-            element={
-              <EmptyModulePage
-                title="Members"
-                description="Member records will live here once the database is connected."
-                actionLabel="Add member"
-              />
-            }
-          />
+          <Route path="/app/members" element={<MembersPage />} />
           <Route
             path="/app/payments"
             element={
