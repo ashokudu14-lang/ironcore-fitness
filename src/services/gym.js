@@ -55,45 +55,21 @@ export async function createGymWorkspace({
     throw claimsError || new Error("No authenticated user.");
   }
 
-  const { data: gym, error: gymError } = await supabase
-    .from("gyms")
-    .insert({
-      name,
-      slug,
-      timezone,
-      currency,
-      created_by: claims.sub,
-    })
-    .select("id, name, slug, timezone, currency")
-    .single();
+  const { data: gym, error: workspaceError } = await supabase.rpc(
+    "create_gym_workspace",
+    {
+      p_name: name,
+      p_slug: slug,
+      p_timezone: timezone,
+      p_currency: currency,
+      p_plan_name: planName,
+      p_plan_price: planPrice,
+      p_plan_duration_days: planDurationDays,
+    },
+  );
 
-  if (gymError) {
-    throw gymError;
-  }
-
-  const { error: membershipError } = await supabase
-    .from("gym_users")
-    .insert({
-      gym_id: gym.id,
-      user_id: claims.sub,
-      role: "owner",
-    });
-
-  if (membershipError) {
-    throw membershipError;
-  }
-
-  const { error: planError } = await supabase
-    .from("membership_plans")
-    .insert({
-      gym_id: gym.id,
-      name: planName,
-      price: planPrice,
-      duration_days: planDurationDays,
-    });
-
-  if (planError) {
-    throw planError;
+  if (workspaceError) {
+    throw workspaceError;
   }
 
   return gym;
