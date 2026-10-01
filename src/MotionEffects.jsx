@@ -2,7 +2,7 @@ import { Children, cloneElement, isValidElement, useEffect, useRef } from "react
 import { motion, useMotionValue, useReducedMotion, useSpring, useTransform } from "motion/react";
 
 const elements = { a: motion.a, button: motion.button, article: motion.article, div: motion.div, section: motion.section };
-const spring = { stiffness: 130, damping: 25, mass: .7 };
+const spring = { stiffness: 165, damping: 28, mass: .65 };
 const clamp = value => Math.max(-1, Math.min(1, value));
 
 // Light and depth belong to the surface under the pointer, not to a global cursor.
@@ -18,11 +18,12 @@ export function GlassSurface({ as = "div", variant = "card", className = "", chi
   const control = variant === "control";
   const lightX = useTransform(x, value => `${50 + value * 50}%`);
   const lightY = useTransform(y, value => `${50 + value * 50}%`);
-  const rotateX = useTransform(y, value => -value * (control ? .7 : 1.7));
-  const rotateY = useTransform(x, value => value * (control ? .7 : 1.7));
+  const card = !banner && !control;
+  const rotateX = useTransform(y, value => -value * (control ? .85 : card ? 3 : 1.8));
+  const rotateY = useTransform(x, value => value * (control ? .85 : card ? 3 : 1.8));
   const panX = useTransform(x, value => control ? value * 1.2 : 0);
-  const lift = useTransform(light, value => -value * (control ? 1.5 : 3));
-  const scale = useTransform(light, value => 1 + value * (control ? .012 : .005));
+  const lift = useTransform(light, value => -value * (control ? 2 : card ? 6 : 3));
+  const scale = useTransform(light, value => 1 + value * (control ? .016 : card ? .01 : .005));
   const imageX = useTransform(x, value => `${-value * 12}px`);
   const imageY = useTransform(y, value => `${-value * 8}px`);
   const copyX = useTransform(x, value => `${value * 3}px`);
@@ -136,8 +137,9 @@ export function CursorAtmosphere() {
   const targetX = useMotionValue(-100);
   const targetY = useMotionValue(-100);
   const active = useMotionValue(0);
-  const x = useSpring(targetX, { stiffness: 360, damping: 34, mass: .5 });
-  const y = useSpring(targetY, { stiffness: 360, damping: 34, mass: .5 });
+  const cursorSpring = { stiffness: 360, damping: 34, mass: .5 };
+  const x = useSpring(targetX, cursorSpring);
+  const y = useSpring(targetY, cursorSpring);
   const opacity = useSpring(active, { stiffness: 220, damping: 28 });
   useEffect(() => {
     if (reduced || !window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
