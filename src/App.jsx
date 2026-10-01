@@ -81,6 +81,7 @@ function App() {
         element.style.opacity = "1";
         element.style.translate = "none";
         element.style.scale = "1";
+        element.style.filter = "none";
       });
       return;
     }
@@ -89,9 +90,10 @@ function App() {
       element.style.opacity = "0";
       element.style.translate = kind === "fade-right" ? "-24px 0px" : "0px 28px";
       element.style.scale = kind === "scale" ? ".97" : "1";
+      element.style.filter = "blur(6px)";
     });
     const stop = inView(elements, (element) => {
-      animations.push(animate(element, { opacity: 1, translate: "0px 0px", scale: 1 }, {
+      animations.push(animate(element, { opacity: 1, translate: "0px 0px", scale: 1, filter: "blur(0px)" }, {
         duration: .85,
         delay: Number(element.dataset.revealDelay || 0) / 1000,
         ease: [.22, 1, .36, 1],
