@@ -335,7 +335,7 @@ p {
   font-size: 0.9rem;
 }
 
-.preview-sidebar span {
+.preview-sidebar > span {
   opacity: 0.7;
 }
 
@@ -379,18 +379,18 @@ p {
   padding: 16px;
 }
 
-.preview-stat span,
-.preview-stat strong {
+.preview-stat > span,
+.preview-stat > strong {
   display: block;
 }
 
-.preview-stat span {
+.preview-stat > span {
   margin-bottom: 26px;
   color: var(--text-muted);
   font-size: 0.7rem;
 }
 
-.preview-stat strong {
+.preview-stat > strong {
   font-size: 0.82rem;
 }
 
@@ -1028,7 +1028,7 @@ textarea::placeholder {
     min-height: 92px;
   }
 
-  .preview-stat span {
+  .preview-stat > span {
     margin-bottom: 16px;
   }
 
@@ -1251,8 +1251,8 @@ textarea::placeholder {
 .button { gap: 20px; transition: transform 360ms var(--ease-out), background-color 240ms ease, box-shadow 360ms var(--ease-out); }
 .marketing-site .button { border-radius: 999px; }
 .button-primary:hover { background: #d8ff73; box-shadow: 0 6px 28px rgba(199,255,66,.12); }
-.button-primary span { transition: transform 360ms var(--ease-out); }
-.button-primary:hover span { transform: translate(3px,-3px); }
+.button-primary > span:not(.cursor-text-node) { transition: transform 360ms var(--ease-out); }
+.button-primary:hover > span:not(.cursor-text-node) { transform: translate(3px,-3px); }
 .button-secondary:hover { background: rgba(255,255,255,.04); }
 .marketing-nav a { position: relative; padding-block: 10px; opacity: 1; color: var(--text-muted); }
 .marketing-nav a.active { color: var(--text); }
@@ -1274,12 +1274,12 @@ textarea::placeholder {
 .preview-shell { grid-template-columns: 114px minmax(0,1fr); min-height: 400px; }
 .preview-sidebar { gap: 18px; padding-inline: 15px; border-right: 1px solid var(--border); }
 .preview-sidebar strong { color: var(--accent); font-family: var(--font-display); }
-.preview-sidebar span:first-of-type { color: var(--accent); opacity: 1; }
+.preview-sidebar > span:first-of-type { color: var(--accent); opacity: 1; }
 .preview-content { padding: 24px 18px; }
 .preview-heading h3 { font-size: 1.2rem; }
 .preview-stat { border-top: 2px solid rgba(199,255,66,.55); }
-.preview-stat span { margin-bottom: 20px; }
-.preview-stat strong { font-size: .72rem; }
+.preview-stat > span { margin-bottom: 20px; }
+.preview-stat > strong { font-size: .72rem; }
 .preview-table-head { flex-wrap: wrap; gap: 4px; }
 .preview-empty { min-height: 110px; }
 .section-heading h2, .process-grid h2, .final-cta h2 { line-height: 1.06; letter-spacing: -.05em; }
