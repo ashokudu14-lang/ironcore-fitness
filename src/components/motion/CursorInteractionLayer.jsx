@@ -1,5 +1,7 @@
 import { useEffect } from "react";
 
+const cursorSpring = { stiffness: 360, damping: 34, mass: 0.5, restDelta: 0.01 };
+
 const SURFACE_SELECTOR = [
   ".marketing-site .preview-stat",
   ".marketing-site .preview-table",
@@ -131,6 +133,9 @@ export default function CursorInteractionLayer() {
       currentY: window.innerHeight / 2,
       pageX: 0,
       pageY: 0,
+      velocityX: 0,
+      velocityY: 0,
+      lastFrame: performance.now(),
       visible: false,
     };
 
@@ -282,9 +287,25 @@ export default function CursorInteractionLayer() {
       wordFrame = requestAnimationFrame(updateWords);
     };
 
-    const animateCursor = () => {
-      pointer.currentX += (pointer.targetX - pointer.currentX) * 0.22;
-      pointer.currentY += (pointer.targetY - pointer.currentY) * 0.22;
+    const animateCursor = (now = performance.now()) => {
+      const dt = Math.min((now - pointer.lastFrame) / 1000, 0.032);
+      pointer.lastFrame = now;
+      const spring = cursorSpring;
+      const accelerationX = ((pointer.targetX - pointer.currentX) * spring.stiffness - pointer.velocityX * spring.damping) / spring.mass;
+      const accelerationY = ((pointer.targetY - pointer.currentY) * spring.stiffness - pointer.velocityY * spring.damping) / spring.mass;
+      pointer.velocityX += accelerationX * dt;
+      pointer.velocityY += accelerationY * dt;
+      pointer.currentX += pointer.velocityX * dt;
+      pointer.currentY += pointer.velocityY * dt;
+
+      if (Math.abs(pointer.targetX - pointer.currentX) < spring.restDelta && Math.abs(pointer.velocityX) < spring.restDelta) {
+        pointer.currentX = pointer.targetX;
+        pointer.velocityX = 0;
+      }
+      if (Math.abs(pointer.targetY - pointer.currentY) < spring.restDelta && Math.abs(pointer.velocityY) < spring.restDelta) {
+        pointer.currentY = pointer.targetY;
+        pointer.velocityY = 0;
+      }
 
       cursor.style.transform =
         `translate3d(${pointer.currentX}px, ${pointer.currentY}px, 0) translate(-50%, -50%)`;
@@ -303,6 +324,8 @@ export default function CursorInteractionLayer() {
       if (!pointer.visible) {
         pointer.currentX = event.clientX;
         pointer.currentY = event.clientY;
+        pointer.velocityX = 0;
+        pointer.velocityY = 0;
         pointer.visible = true;
         cursor.classList.add("is-visible");
       }
