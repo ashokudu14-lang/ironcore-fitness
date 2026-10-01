@@ -5,8 +5,8 @@ export const motionTiming = {
 };
 
 export const fadeUp = {
-  hidden: { opacity: 0, y: 28 },
-  visible: { opacity: 1, y: 0 },
+  hidden: { opacity: 0, y: 28, filter: "blur(6px)" },
+  visible: { opacity: 1, y: 0, filter: "blur(0px)" },
 };
 
 export const pageFade = {
