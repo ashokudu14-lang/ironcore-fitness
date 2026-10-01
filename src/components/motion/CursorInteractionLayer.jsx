@@ -291,12 +291,23 @@ export default function CursorInteractionLayer() {
       const dt = Math.min((now - pointer.lastFrame) / 1000, 0.032);
       pointer.lastFrame = now;
       const spring = cursorSpring;
-      const accelerationX = ((pointer.targetX - pointer.currentX) * spring.stiffness - pointer.velocityX * spring.damping) / spring.mass;
-      const accelerationY = ((pointer.targetY - pointer.currentY) * spring.stiffness - pointer.velocityY * spring.damping) / spring.mass;
-      pointer.velocityX += accelerationX * dt;
-      pointer.velocityY += accelerationY * dt;
-      pointer.currentX += pointer.velocityX * dt;
-      pointer.currentY += pointer.velocityY * dt;
+      const steps = Math.max(1, Math.ceil(dt / (1 / 120)));
+      const step = dt / steps;
+
+      for (let index = 0; index < steps; index += 1) {
+        const accelerationX =
+          ((pointer.targetX - pointer.currentX) * spring.stiffness -
+            pointer.velocityX * spring.damping) /
+          spring.mass;
+        const accelerationY =
+          ((pointer.targetY - pointer.currentY) * spring.stiffness -
+            pointer.velocityY * spring.damping) /
+          spring.mass;
+        pointer.velocityX += accelerationX * step;
+        pointer.velocityY += accelerationY * step;
+        pointer.currentX += pointer.velocityX * step;
+        pointer.currentY += pointer.velocityY * step;
+      }
 
       if (Math.abs(pointer.targetX - pointer.currentX) < spring.restDelta && Math.abs(pointer.velocityX) < spring.restDelta) {
         pointer.currentX = pointer.targetX;
