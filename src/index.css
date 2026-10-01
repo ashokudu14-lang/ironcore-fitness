@@ -2541,7 +2541,7 @@ h1 span {
 
 /* Close-range type follows the pointer without changing text flow or hit areas. */
 ic-word { display: inline-block; transform: perspective(700px) rotateX(var(--word-rx,0deg)) rotateY(var(--word-ry,0deg)) rotateZ(var(--word-rz,0deg)); transform-origin: 50% 65%; transition: transform 420ms cubic-bezier(.22,1,.36,1); }
-.premium-cursor { position: fixed; left: -9px; top: -9px; width: 18px; height: 18px; border: 1px solid rgba(199,255,66,.8); border-radius: 50%; z-index: 100; pointer-events: none; box-shadow: 0 0 12px rgba(199,255,66,.12); }
+.premium-cursor { position: fixed; left: -7px; top: -7px; width: 14px; height: 14px; border: 1px solid rgba(199,255,66,.8); border-radius: 50%; z-index: 100; pointer-events: none; box-shadow: none; }
 .premium-orbits { position: fixed; inset: 0; z-index: 5; overflow: hidden; pointer-events: none; }
 .premium-orbit { position: absolute; width: min(72vw,950px); aspect-ratio: 1; border-radius: 50%; border: 1px solid rgba(199,255,66,.065); right: -28%; top: 12%; animation: premium-orbit-turn 65s linear infinite; }
 .premium-orbit::before { content: ""; position: absolute; inset: 7%; border-radius: 50%; border: 1px dashed rgba(245,243,239,.045); }
@@ -2553,3 +2553,16 @@ ic-word { display: inline-block; transform: perspective(700px) rotateX(var(--wor
 @media (prefers-reduced-motion: reduce) { .premium-cursor { display: none; } .premium-orbit { animation: none; } ic-word { transform: none; transition: none; } }
 
 ic-phrase { display: inline; }
+
+
+/* Smooth spring interactions: soft blur reveals, clearer buttons, restrained card depth. */
+.glass-control { transition: color 250ms ease, background-color 250ms ease, border-color 250ms ease, box-shadow 400ms ease, filter 300ms ease; }
+.button-primary.glass-control:hover { filter: brightness(1.06); box-shadow: 0 8px 26px rgba(199,255,66,.13); }
+.button-secondary.glass-control:hover, .text-link.glass-control:hover, .nav-cta.glass-control:hover { filter: brightness(1.12); }
+.button:hover span, .text-link:hover span { transform: translate(3px,-1px); }
+.glass-card { transform-style: preserve-3d; }
+.glass-card > * { translate: 0 0 5px; transition: translate 420ms cubic-bezier(.22,1,.36,1); }
+.glass-card:hover > * { translate: 0 0 10px; }
+.glass-surface:not(.glass-banner) { transition: filter 300ms ease; }
+[data-reveal] { filter: blur(0); }
+@media (prefers-reduced-motion: reduce), (pointer: coarse) { .glass-card > *, .glass-card:hover > * { translate: none; transition: none; } }
