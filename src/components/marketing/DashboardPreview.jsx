@@ -1,76 +1,79 @@
-import { motion, useMotionValue, useSpring, useReducedMotion } from "motion/react";
-
+import Icon from "../ui/Icon.jsx";
 export default function DashboardPreview() {
-  const reduced = useReducedMotion();
-  const targetX = useMotionValue(0);
-  const targetY = useMotionValue(0);
-  const rotateX = useSpring(targetX, { stiffness: 140, damping: 25 });
-  const rotateY = useSpring(targetY, { stiffness: 140, damping: 25 });
-  const followPointer = (event) => {
-    if (reduced || event.pointerType !== "mouse") return;
-    const bounds = event.currentTarget.getBoundingClientRect();
-    targetX.set(-((event.clientY - bounds.top) / bounds.height - 0.5) * 5);
-    targetY.set(((event.clientX - bounds.left) / bounds.width - 0.5) * 5);
-  };
   return (
-    <motion.div className="dashboard-preview" aria-label="IronCore OS product preview"
-      style={reduced ? undefined : { rotateX, rotateY, transformPerspective: 1200 }}
-      onPointerMove={followPointer}
-      onPointerLeave={() => { targetX.set(0); targetY.set(0); }}
-    >
+    <div className="dashboard-preview" aria-label="IronCore OS product preview">
       <div className="preview-bar">
-        <span>Product preview</span>
-        <span>Example layout, no customer data</span>
+        <span>
+          <i aria-hidden="true" /> ironcore / workspace
+        </span>
+        <span>Product preview · empty workspace</span>
       </div>
-
       <div className="preview-shell">
         <aside className="preview-sidebar" aria-hidden="true">
-          <strong>IronCore OS</strong>
-          <span>Overview</span>
-          <span>Members</span>
-          <span>Payments</span>
-          <span>Renewals</span>
+          <strong>
+            <span className="brand-mark">I</span> IronCore
+          </strong>
+          {[
+            ["grid", "Overview"],
+            ["members", "Members"],
+            ["payments", "Payments"],
+            ["renewals", "Renewals"],
+          ].map(([icon, label]) => (
+            <span key={label}>
+              <Icon name={icon} size={14} />
+              {label}
+            </span>
+          ))}
+          <span className="preview-settings">
+            <Icon name="settings" size={14} />
+            Settings
+          </span>
         </aside>
-
         <div className="preview-content">
           <div className="preview-heading">
             <div>
-              <span className="eyebrow">Overview</span>
-              <h3>Your gym at a glance</h3>
+              <span className="eyebrow">Your workspace</span>
+              <h3>Ready for your next chapter.</h3>
             </div>
-            <span className="preview-date">Today</span>
+            <Icon name="activity" />
           </div>
-
           <div className="preview-stat-grid">
             {[
-              ["Active members", "No data loaded"],
-              ["Renewals due", "No data loaded"],
-              ["Revenue this month", "No data loaded"],
-            ].map(([label, value], index) => (
-              <motion.article className="preview-stat" key={label}
-                initial={reduced ? false : { opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-                transition={{ duration: 0.65, delay: 0.28 + index * 0.1, ease: [0.22, 1, 0.36, 1] }}
-                whileHover={reduced ? undefined : { y: -3 }}
-              >
-                <span>{label}</span>
-                <strong>{value}</strong>
-              </motion.article>
+              ["Active members", "members"],
+              ["Monthly revenue", "payments"],
+              ["Renewals due", "renewals"],
+            ].map(([label, icon]) => (
+              <article className="preview-stat" key={label}>
+                <span>
+                  {label}
+                  <Icon name={icon} size={13} />
+                </span>
+                <strong>—</strong>
+                <small>Awaiting your first records</small>
+              </article>
             ))}
           </div>
-
           <div className="preview-table">
             <div className="preview-table-head">
               <strong>Upcoming renewals</strong>
-              <span>Real records will appear here</span>
+              <span>Next 7 days</span>
             </div>
             <div className="preview-empty">
-              <span>No members yet</span>
-              <small>Add your first member after setup.</small>
+              <span className="preview-empty-icon">
+                <Icon name="renewals" />
+              </span>
+              <span>A clear view of what’s next.</span>
+              <small>Your upcoming renewals will appear here.</small>
             </div>
+          </div>
+          <div className="preview-bottom">
+            <span>
+              <Icon name="shield" size={12} /> A workspace built around your gym
+            </span>
+            <span>IronCore OS</span>
           </div>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }

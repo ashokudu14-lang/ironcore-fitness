@@ -53,9 +53,6 @@ jobs:
       - name: Build application for browser QA
         run: npm run build
 
-      - name: Install browser test dependencies
-        run: npm install --no-save @playwright/test@latest @axe-core/playwright@latest
-
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
 

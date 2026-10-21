@@ -1,4 +1,7 @@
 import { useEffect, useState } from "react";
+import useUnsavedChanges from "../../hooks/useUnsavedChanges.js";
+import DataTable from "../../components/ui/DataTable.jsx";
+import { Badge, Feedback, Skeleton } from "../../components/ui/Primitives.jsx";
 import PageTransition from "../../components/motion/PageTransition.jsx";
 import { getCurrentGym } from "../../services/gym.js";
 import { createMember, listMembers } from "../../services/members.js";
@@ -21,39 +24,43 @@ export default function MembersPage() {
   const [status, setStatus] = useState("loading");
   const [message, setMessage] = useState("");
 
-  const load = async () => {
-    setStatus("loading");
-
-    try {
-      const currentGym = await getCurrentGym();
-
-      if (!currentGym) {
-        setStatus("error");
-        setMessage("No gym workspace found.");
-        return;
-      }
-
-      const [memberRows, planRows] = await Promise.all([
-        listMembers(currentGym.id),
-        listActivePlans(currentGym.id),
-      ]);
-
-      setGym(currentGym);
-      setMembers(memberRows);
-      setPlans(planRows);
-      setForm((current) => ({
-        ...current,
-        planId: current.planId || planRows[0]?.id || "",
-      }));
-      setStatus("ready");
-    } catch (error) {
-      setStatus("error");
-      setMessage(error.message || "Unable to load members.");
-    }
-  };
+  useUnsavedChanges(
+    Boolean(
+      form.fullName ||
+        form.phone ||
+        form.email ||
+        form.joinedAt !== makeInitialForm().joinedAt ||
+        (plans.length && form.planId !== plans[0].id),
+    ),
+  );
 
   useEffect(() => {
-    load();
+    let active = true;
+    getCurrentGym()
+      .then(async (currentGym) => {
+        if (!currentGym) throw new Error("No gym workspace found.");
+        const [memberRows, planRows] = await Promise.all([
+          listMembers(currentGym.id),
+          listActivePlans(currentGym.id),
+        ]);
+        if (!active) return;
+        setGym(currentGym);
+        setMembers(memberRows);
+        setPlans(planRows);
+        setForm((current) => ({
+          ...current,
+          planId: current.planId || planRows[0]?.id || "",
+        }));
+        setStatus("ready");
+      })
+      .catch((error) => {
+        if (!active) return;
+        setStatus("error");
+        setMessage(error.message || "Unable to load members.");
+      });
+    return () => {
+      active = false;
+    };
   }, []);
 
   const update = (event) => {
@@ -87,6 +94,7 @@ export default function MembersPage() {
         planId: plans[0]?.id || "",
       });
       setStatus("ready");
+      setMessage("Member added successfully.");
     } catch (error) {
       setStatus("error");
       setMessage(error.message || "Unable to add member.");
@@ -113,27 +121,62 @@ export default function MembersPage() {
           </div>
 
           {status === "loading" ? (
-            <div className="empty-state"><p>Loading members.</p></div>
-          ) : members.length === 0 ? (
-            <div className="empty-state">
-              <strong>No members yet.</strong>
-              <p>Add the first member using the form.</p>
-            </div>
+            <Skeleton rows={5} />
+          ) : status === "error" && !gym ? (
+            <Feedback error>{message}</Feedback>
           ) : (
-            <div className="member-list">
-              {members.map((member) => (
-                <article className="member-row" key={member.id}>
-                  <div>
-                    <strong>{member.full_name}</strong>
-                    <span>{member.phone}</span>
-                  </div>
-                  <div>
-                    <span>{member.email || "No email"}</span>
-                    <small>{member.status}</small>
-                  </div>
-                </article>
-              ))}
-            </div>
+            <DataTable
+              rows={members}
+              label="members"
+              searchKeys={(row) =>
+                `${row.full_name} ${row.email || ""} ${row.phone}`
+              }
+              filterKey={(row) => row.status}
+              filters={[
+                { value: "active", label: "Active" },
+                { value: "inactive", label: "Inactive" },
+              ]}
+              emptyTitle="Your member community starts here."
+              emptyText="Add your first member using the form. Their details and status will appear here."
+              columns={[
+                {
+                  key: "name",
+                  label: "Member",
+                  sortValue: (row) => row.full_name,
+                  render: (row) => (
+                    <div className="table-person">
+                      <span className="table-avatar" aria-hidden="true">
+                        {row.full_name.slice(0, 2).toUpperCase()}
+                      </span>
+                      <div>
+                        <strong>{row.full_name}</strong>
+                        <small>{row.email || "No email provided"}</small>
+                      </div>
+                    </div>
+                  ),
+                },
+                { key: "phone", label: "Phone", render: (row) => row.phone },
+                {
+                  key: "status",
+                  label: "Status",
+                  sortValue: (row) => row.status,
+                  render: (row) => (
+                    <Badge
+                      tone={row.status === "active" ? "success" : "neutral"}
+                    >
+                      {row.status}
+                    </Badge>
+                  ),
+                },
+                {
+                  key: "joined",
+                  label: "Joined",
+                  sortValue: (row) => row.joined_at,
+                  render: (row) =>
+                    new Date(row.joined_at + "T00:00:00").toLocaleDateString(),
+                },
+              ]}
+            />
           )}
         </section>
 
@@ -145,48 +188,96 @@ export default function MembersPage() {
             </div>
           </div>
 
-          <form className="module-form" onSubmit={submit}>
-            <label>
-              Full name
-              <input name="fullName" value={form.fullName} onChange={update} required />
-            </label>
-
-            <label>
-              Phone
-              <input name="phone" value={form.phone} onChange={update} required />
-            </label>
-
-            <label>
-              Email
-              <input name="email" type="email" value={form.email} onChange={update} />
-            </label>
-
-            <label>
-              Joined date
-              <input name="joinedAt" type="date" value={form.joinedAt} onChange={update} required />
-            </label>
-
-            <label>
-              Membership plan
-              <select name="planId" value={form.planId} onChange={update} required>
-                <option value="">Select plan</option>
-                {plans.map((plan) => (
-                  <option key={plan.id} value={plan.id}>
-                    {plan.name} · {plan.duration_days} days
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            {message && <p className="form-feedback error">{message}</p>}
-
-            <button
-              className="button button-primary"
-              type="submit"
-              disabled={!gym || !plans.length || status === "saving"}
+          <form
+            className="module-form"
+            onSubmit={submit}
+            aria-busy={status === "saving"}
+          >
+            <fieldset
+              className="form-fields"
+              disabled={status === "saving" || status === "loading"}
             >
-              {status === "saving" ? "Adding member..." : "Add member"}
-            </button>
+              <label>
+                Full name
+                <input
+                  autoComplete="name"
+                  placeholder="Member’s full name"
+                  name="fullName"
+                  value={form.fullName}
+                  onChange={update}
+                  required
+                />
+              </label>
+
+              <label>
+                Phone
+                <input
+                  type="tel"
+                  autoComplete="tel"
+                  placeholder="Phone number"
+                  name="phone"
+                  value={form.phone}
+                  onChange={update}
+                  required
+                />
+              </label>
+
+              <label>
+                Email
+                <input
+                  autoComplete="email"
+                  placeholder="Optional"
+                  name="email"
+                  type="email"
+                  value={form.email}
+                  onChange={update}
+                />
+              </label>
+
+              <label>
+                Joined date
+                <input
+                  name="joinedAt"
+                  type="date"
+                  value={form.joinedAt}
+                  onChange={update}
+                  required
+                />
+              </label>
+
+              <label>
+                Membership plan
+                <select
+                  name="planId"
+                  value={form.planId}
+                  onChange={update}
+                  required
+                >
+                  <option value="">Select plan</option>
+                  {plans.map((plan) => (
+                    <option key={plan.id} value={plan.id}>
+                      {plan.name} · {plan.duration_days} days
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <Feedback error={status === "error"}>{message}</Feedback>
+              {gym && !plans.length && (
+                <p className="form-help">
+                  Create an active membership plan in Settings before adding a
+                  member.
+                </p>
+              )}
+
+              <button
+                className="button button-primary"
+                type="submit"
+                disabled={!gym || !plans.length || status === "saving"}
+              >
+                {status === "saving" ? "Adding member..." : "Add member"}
+              </button>
+            </fieldset>
           </form>
         </section>
       </div>

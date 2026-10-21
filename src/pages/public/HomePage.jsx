@@ -1,149 +1,285 @@
+import { useRef } from "react";
 import { Link } from "react-router-dom";
-import { motion, useReducedMotion } from "motion/react";
-import DashboardPreview from "../../components/marketing/DashboardPreview.jsx";
+import { gsap } from "gsap";
+import { useGSAP } from "@gsap/react";
+import CoreSculpture from "../../components/three/CoreSculpture.jsx";
+import DimensionalIcon from "../../components/three/DimensionalIcon.jsx";
+import ProductStage from "../../components/three/ProductStage.jsx";
 import Reveal from "../../components/motion/Reveal.jsx";
-import PageTransition from "../../components/motion/PageTransition.jsx";
-import { motionTiming } from "../../motion/presets.js";
-
-const heroLines = [
-  "Manage your gym members,",
-  "payments, and renewals",
-  "in one place.",
-];
-
+import SpotlightCard from "../../components/ui/SpotlightCard.jsx";
+import Icon from "../../components/ui/Icon.jsx";
 const features = [
-  {
-    title: "Member records",
-    text: "Keep contact details, membership status, and plan dates in one clear record.",
-    className: "bento-card bento-card-wide",
-  },
-  {
-    title: "Payment tracking",
-    text: "Record what was paid, when it was paid, and which member it belongs to.",
-    className: "bento-card",
-  },
-  {
-    title: "Renewal view",
-    text: "See memberships that are due soon so follow-up is part of the daily routine.",
-    className: "bento-card",
-  },
-  {
-    title: "Real dashboard data",
-    text: "The dashboard will show actual membership and revenue data from your gym. No invented counters.",
-    className: "bento-card bento-card-wide",
-  },
+  [
+    "members",
+    "Member records",
+    "Know the person. Keep the details.",
+    "Contact details, membership status, and plan dates, together in one organized directory.",
+  ],
+  [
+    "payments",
+    "Payment tracking",
+    "Every payment, accounted for.",
+    "Record collections and keep payment history attached to the right member.",
+  ],
+  [
+    "renewals",
+    "Renewal workspace",
+    "Stay ahead of the expiry date.",
+    "See who’s due in the next seven days. Follow up and renew without losing the thread.",
+  ],
+  [
+    "grid",
+    "Gym overview",
+    "Start the day with a clear picture.",
+    "Active members, monthly collections, and upcoming renewals. Your real records, in focus.",
+  ],
 ];
-
 export default function HomePage() {
-  const reduceMotion = useReducedMotion();
-
+  const hero = useRef(null);
+  useGSAP(
+    () => {
+      const media = gsap.matchMedia();
+      media.add("(prefers-reduced-motion: no-preference)", () => {
+        gsap
+          .timeline({
+            defaults: { duration: 0.6, ease: "power3.out", clearProps: "all" },
+          })
+          .from(".hero-eyebrow", { y: 12, opacity: 0 })
+          .from(".hero-line", { y: 22, opacity: 0, stagger: 0.07 }, 0.08)
+          .from(
+            ".hero-description, .hero-actions, .hero-footnote",
+            { y: 12, opacity: 0, stagger: 0.06 },
+            0.3,
+          )
+          .from(".hero-art", { y: 20, opacity: 0 }, 0.36);
+      });
+      return () => media.revert();
+    },
+    { scope: hero },
+  );
   return (
-    <PageTransition>
-      <section className="hero-section">
+    <div className="dimensional-home">
+      <section className="hero-section dimensional-hero" ref={hero}>
         <div className="hero-atmosphere" aria-hidden="true">
-          <div className="hero-orbit orbit-one" />
-          <div className="hero-orbit orbit-two" />
           <div className="hero-grid-lines" />
         </div>
         <div className="container hero-grid">
           <div className="hero-copy">
-            <span className="eyebrow">Gym management software</span>
+            <span className="eyebrow hero-eyebrow">
+              <span className="accent-dash" /> A stronger dimension of gym
+              management
+            </span>
             <h1>
-              {heroLines.map((line, index) => (
-                <motion.span
-                  className="hero-line"
-                  key={line}
-                  initial={reduceMotion ? false : { opacity: 0, y: 32, rotateX: 12 }}
-                  animate={reduceMotion ? undefined : { opacity: 1, y: 0, rotateX: 0 }}
-                  transition={
-                    reduceMotion
-                      ? undefined
-                      : { ...motionTiming.intro, delay: index * 0.1 }
-                  }
-                >
-                  {line}
-                </motion.span>
-              ))}
+              <span className="hero-line">Manage your gym members,</span>
+              <span className="hero-line">payments, and renewals</span>
+              <span className="hero-line">in one place.</span>
             </h1>
-
-            <motion.p
-              className="hero-description"
-              initial={reduceMotion ? false : { opacity: 0, y: 14 }}
-              animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
-              transition={
-                reduceMotion
-                  ? undefined
-                  : { ...motionTiming.intro, delay: 0.32 }
-              }
-            >
-              IronCore OS gives independent gym owners a clear place to manage
-              members, record payments, and keep track of upcoming renewals.
-            </motion.p>
-
-            <motion.div
-              className="hero-actions"
-              initial={reduceMotion ? false : { opacity: 0, y: 14 }}
-              animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
-              transition={
-                reduceMotion
-                  ? undefined
-                  : { ...motionTiming.intro, delay: 0.42 }
-              }
-            >
+            <p className="hero-description">
+              Built for the way you move.
+              <br />
+              One focused workspace for every side of your gym.
+            </p>
+            <div className="hero-actions">
               <Link className="button button-primary" to="/signup">
-                Start free <span aria-hidden="true">↗</span>
+                Build your workspace <Icon name="arrow" />
               </Link>
-              <Link className="button button-secondary" to="/pricing">
-                View pricing
-              </Link>
-            </motion.div>
+              <a className="button button-secondary" href="#product-preview">
+                Explore the product <Icon name="chevron" size={16} />
+              </a>
+            </div>
+            <p className="hero-footnote">
+              <Icon name="shield" size={14} /> Members. Payments. Renewals. One
+              clear routine.
+            </p>
           </div>
-
-          <Reveal className="hero-preview" delay={0.16}>
-            <DashboardPreview />
-          </Reveal>
+          <div className="hero-art">
+            <div className="sculpture-stage">
+              <div className="sculpture-coordinate" aria-hidden="true">
+                <span>IC / CORE SYSTEM</span>
+                <span>01 — IN CONTROL</span>
+              </div>
+              <CoreSculpture />
+              <div className="floating-module float-members" aria-hidden="true">
+                <span className="floating-module-icon">
+                  <Icon name="members" />
+                </span>
+                <div>
+                  <small>PEOPLE, CONNECTED</small>
+                  <strong>Every member matters.</strong>
+                </div>
+                <span className="floating-check">
+                  <Icon name="check" size={12} />
+                </span>
+              </div>
+              <div
+                className="floating-module float-collection"
+                aria-hidden="true"
+              >
+                <Icon name="payments" />
+                <div>
+                  <small>COLLECTIONS, ORGANIZED</small>
+                  <strong>Keep your business moving.</strong>
+                </div>
+              </div>
+              <span
+                className="sculpture-crosshair crosshair-top"
+                aria-hidden="true"
+              >
+                +
+              </span>
+              <span
+                className="sculpture-crosshair crosshair-bottom"
+                aria-hidden="true"
+              >
+                +
+              </span>
+            </div>
+            <div className="sculpture-legend" aria-hidden="true">
+              <span>
+                <i /> PRECISION IN EVERY DETAIL
+              </span>
+              <span>DESIGNED FOR MOMENTUM ↗</span>
+            </div>
+          </div>
         </div>
       </section>
-
+      <div className="product-strip">
+        <div className="container">
+          {[
+            ["members", "Member management"],
+            ["payments", "Payment records"],
+            ["renewals", "Renewal tracking"],
+            ["shield", "Gym-scoped access"],
+          ].map(([icon, text]) => (
+            <span key={text}>
+              <Icon name={icon} size={17} />
+              {text}
+            </span>
+          ))}
+        </div>
+      </div>
+      <section
+        className="section product-dimension-section"
+        id="product-preview"
+        aria-labelledby="workspace-heading"
+      >
+        <div className="container">
+          <Reveal className="product-dimension-heading">
+            <div>
+              <span className="eyebrow">The bigger picture</span>
+              <h2 id="workspace-heading">
+                Clarity.
+                <br />
+                <span className="muted-heading">From every angle.</span>
+              </h2>
+            </div>
+            <p>
+              A space for the people, payments, and plans that keep your gym
+              moving. Everything connected. Nothing lost in the noise.
+            </p>
+          </Reveal>
+          <ProductStage />
+        </div>
+      </section>
       <section className="section" aria-labelledby="product-heading">
         <div className="container">
           <Reveal className="section-heading">
-            <span className="eyebrow">Daily operations</span>
-            <h2 id="product-heading">Less admin. Clearer follow-up.</h2>
+            <span className="eyebrow">Built for the everyday</span>
+            <h2 id="product-heading">
+              Less admin.
+              <br />
+              <span className="muted-heading">More forward motion.</span>
+            </h2>
             <p>
-              Start with the work that matters every day: members, money, and
-              memberships that are about to expire.
+              The essentials to run your member business, without another
+              complicated system to manage.
             </p>
           </Reveal>
-
           <div className="bento-grid">
-            {features.map((feature, index) => (
-              <Reveal className={feature.className} delay={index * 0.08} interactive key={feature.title}>
-                <div className="feature-topline"><span className="feature-index">0{index + 1}</span><span className="feature-arrow" aria-hidden="true">↗</span></div>
-                <h3>{feature.title}</h3>
-                <p>{feature.text}</p>
+            {features.map(([icon, label, title, text], index) => (
+              <Reveal key={label} delay={(index % 2) * 0.05}>
+                <SpotlightCard className="bento-card">
+                  <div className="feature-topline">
+                    <DimensionalIcon type={icon} />
+                    <span className="feature-index">
+                      0{index + 1} / {label}
+                    </span>
+                  </div>
+                  <h3>{title}</h3>
+                  <p>{text}</p>
+                  <div className="feature-detail" aria-hidden="true">
+                    {index === 0 ? (
+                      <>
+                        <span className="mini-avatar">IC</span>
+                        <div>
+                          <strong>Every member matters</strong>
+                          <small>Details · Plans · Membership status</small>
+                        </div>
+                      </>
+                    ) : index === 1 ? (
+                      <>
+                        <Icon name="check" />
+                        <span>Collections, clearly recorded.</span>
+                      </>
+                    ) : index === 2 ? (
+                      <>
+                        <Icon name="calendar" />
+                        <span>Your next 7 days, in view.</span>
+                      </>
+                    ) : (
+                      <>
+                        <Icon name="activity" />
+                        <span>Actual records. Useful perspective.</span>
+                      </>
+                    )}
+                  </div>
+                </SpotlightCard>
               </Reveal>
             ))}
           </div>
         </div>
       </section>
-
-      <section className="section process-section" aria-labelledby="process-heading">
+      <section
+        className="section process-section"
+        id="workflow"
+        aria-labelledby="process-heading"
+      >
         <div className="container process-grid">
           <Reveal>
-            <span className="eyebrow">How it works</span>
-            <h2 id="process-heading">Set up the gym, then keep the routine simple.</h2>
+            <span className="eyebrow">A better daily routine</span>
+            <h2 id="process-heading">
+              Set up.
+              <br />
+              Show up.
+              <br />
+              <span className="muted-heading">Stay on track.</span>
+            </h2>
+            <p>From your first plan to your next renewal.</p>
+            <Link to="/signup" className="text-button inline-link">
+              Create your workspace <Icon name="arrow" />
+            </Link>
           </Reveal>
-
           <div className="process-list">
             {[
-              ["01", "Add your plans", "Define the membership plans you actually sell."],
-              ["02", "Add members", "Store member details and their current membership period."],
-              ["03", "Record payments", "Keep payment history attached to the right member."],
-              ["04", "Review renewals", "Work through upcoming expiries from one list."],
-            ].map(([number, title, text], index) => (
-              <Reveal className="process-item" delay={index * 0.04} key={number}>
-                <span>{number}</span>
+              [
+                "Define your plans",
+                "Set the prices and membership periods you actually offer.",
+              ],
+              [
+                "Bring your members together",
+                "Add contact details and assign the right membership plan.",
+              ],
+              [
+                "Record what comes in",
+                "Keep a clear history of payments against each member.",
+              ],
+              [
+                "Make follow-up a habit",
+                "Review upcoming expiries and renew memberships in one place.",
+              ],
+            ].map(([title, text], index) => (
+              <Reveal className="process-item" key={title}>
+                <span>0{index + 1}</span>
                 <div>
                   <h3>{title}</h3>
                   <p>{text}</p>
@@ -153,22 +289,30 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-
       <section className="section">
-        <div className="container final-cta">
+        <div className="container final-cta dimensional-cta">
           <Reveal>
-            <span className="eyebrow">IronCore OS</span>
-            <h2>Run the member side of your gym from one workspace.</h2>
-            <p>
-              The MVP is focused on practical gym operations. More features can
-              come after the core workflow is proven with real users.
-            </p>
+            <span className="eyebrow">Your gym. Your momentum.</span>
+            <h2>
+              Strong gyms run
+              <br />
+              on clear routines.
+            </h2>
+            <p>Give your member operations a workspace that keeps up.</p>
             <Link className="button button-primary" to="/signup">
-              Create an account
+              Get started with IronCore <Icon name="arrow" />
             </Link>
           </Reveal>
+          <div className="cta-dimensional-mark" aria-hidden="true">
+            <div className="iron-emblem">
+              <span />
+              <span />
+              <span />
+            </div>
+            <span className="cta-orbit" />
+          </div>
         </div>
       </section>
-    </PageTransition>
+    </div>
   );
 }

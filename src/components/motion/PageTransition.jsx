@@ -1,22 +1,38 @@
-import { motion, useReducedMotion } from "motion/react";
-import { motionTiming, pageFade } from "../../motion/presets.js";
-
+import { useRef } from "react";
+import { useLocation } from "react-router-dom";
+import { gsap } from "gsap";
+import { useGSAP } from "@gsap/react";
 export default function PageTransition({ children, className = "" }) {
-  const reduceMotion = useReducedMotion();
-
-  if (reduceMotion) {
-    return <div className={className}>{children}</div>;
-  }
-
+  const ref = useRef(null);
+  const { pathname } = useLocation();
+  useGSAP(
+    () => {
+      const media = gsap.matchMedia();
+      media.add("(prefers-reduced-motion: no-preference)", () => {
+        gsap.from(ref.current, {
+          opacity: 0,
+          y: 10,
+          duration: 0.35,
+          ease: "power2.out",
+          clearProps: "all",
+        });
+        const cards = ref.current.querySelectorAll(".app-stat-card");
+        if (cards.length)
+          gsap.from(cards, {
+            y: 12,
+            opacity: 0,
+            stagger: 0.055,
+            duration: 0.4,
+            clearProps: "all",
+          });
+      });
+      return () => media.revert();
+    },
+    { scope: ref, dependencies: [pathname], revertOnUpdate: true },
+  );
   return (
-    <motion.div
-      className={className}
-      initial="hidden"
-      animate="visible"
-      variants={pageFade}
-      transition={motionTiming.standard}
-    >
+    <div ref={ref} className={className}>
       {children}
-    </motion.div>
+    </div>
   );
 }

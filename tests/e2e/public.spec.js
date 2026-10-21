@@ -1,7 +1,14 @@
 import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 
-const publicRoutes = ["/", "/pricing", "/privacy", "/terms", "/login", "/signup"];
+const publicRoutes = [
+  "/",
+  "/pricing",
+  "/privacy",
+  "/terms",
+  "/login",
+  "/signup",
+];
 
 for (const route of publicRoutes) {
   test(`${route} loads without console errors`, async ({ page }) => {
@@ -42,14 +49,18 @@ for (const route of publicRoutes) {
     await page.goto(route);
 
     const hasOverflow = await page.evaluate(
-      () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
+      () =>
+        document.documentElement.scrollWidth >
+        document.documentElement.clientWidth + 1,
     );
 
     expect(hasOverflow).toBeFalsy();
   });
 }
 
-test("homepage uses specific product copy and legal footer links", async ({ page }) => {
+test("homepage uses specific product copy and legal footer links", async ({
+  page,
+}) => {
   await page.goto("/");
 
   await expect(
@@ -59,30 +70,43 @@ test("homepage uses specific product copy and legal footer links", async ({ page
     }),
   ).toBeVisible();
 
-  await expect(page.getByRole("link", { name: "Privacy Policy" })).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "Privacy Policy" }),
+  ).toBeVisible();
   await expect(
     page.getByRole("link", { name: "Terms and Conditions" }),
   ).toBeVisible();
 });
 
-test("protected app route redirects unauthenticated users to login", async ({ page }) => {
+test("protected app route redirects unauthenticated users to login", async ({
+  page,
+}) => {
   await page.goto("/app/members");
   await expect(page).toHaveURL(/\/login/);
-  await expect(page.getByRole("heading", { name: /log in to ironcore os/i })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: /log in to ironcore os/i }),
+  ).toBeVisible();
 });
 
-test("reduced motion disables authored transition durations", async ({ browser }) => {
+test("reduced motion disables authored transition durations", async ({
+  browser,
+}) => {
   const context = await browser.newContext({ reducedMotion: "reduce" });
   const page = await context.newPage();
 
   await page.goto("/");
 
-  const durationSeconds = await page.locator(".button-primary").first().evaluate((element) => {
-    const value = getComputedStyle(element).transitionDuration.split(",")[0].trim();
-    return value.endsWith("ms")
-      ? Number.parseFloat(value) / 1000
-      : Number.parseFloat(value);
-  });
+  const durationSeconds = await page
+    .locator(".button-primary")
+    .first()
+    .evaluate((element) => {
+      const value = getComputedStyle(element)
+        .transitionDuration.split(",")[0]
+        .trim();
+      return value.endsWith("ms")
+        ? Number.parseFloat(value) / 1000
+        : Number.parseFloat(value);
+    });
 
   expect(durationSeconds).toBeLessThanOrEqual(0.00002);
   await context.close();

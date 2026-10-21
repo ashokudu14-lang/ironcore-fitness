@@ -1,11 +1,9 @@
 import { useEffect, useState } from "react";
+import useUnsavedChanges from "../../hooks/useUnsavedChanges.js";
+import { Badge, Skeleton } from "../../components/ui/Primitives.jsx";
 import PageTransition from "../../components/motion/PageTransition.jsx";
 import { getCurrentGym, updateGym } from "../../services/gym.js";
-import {
-  createPlan,
-  listPlans,
-  setPlanActive,
-} from "../../services/plans.js";
+import { createPlan, listPlans, setPlanActive } from "../../services/plans.js";
 
 const formatMoney = (value, currency) =>
   new Intl.NumberFormat("en-IN", {
@@ -28,32 +26,43 @@ export default function SettingsPage() {
     price: "",
   });
   const [status, setStatus] = useState("loading");
+  const [togglingId, setTogglingId] = useState("");
   const [message, setMessage] = useState("");
 
-  const load = async () => {
-    setStatus("loading");
-    setMessage("");
-
-    try {
-      const currentGym = await getCurrentGym();
-      const planRows = await listPlans(currentGym.id);
-
-      setGym(currentGym);
-      setPlans(planRows);
-      setGymForm({
-        name: currentGym.name,
-        timezone: currentGym.timezone,
-        currency: currentGym.currency,
-      });
-      setStatus("ready");
-    } catch (error) {
-      setStatus("error");
-      setMessage(error.message || "Unable to load settings.");
-    }
-  };
+  const dirty = Boolean(
+    gym &&
+      (gymForm.name !== gym.name ||
+        gymForm.timezone !== gym.timezone ||
+        gymForm.currency !== gym.currency ||
+        planForm.name ||
+        planForm.price ||
+        planForm.durationDays !== "30"),
+  );
+  useUnsavedChanges(dirty);
 
   useEffect(() => {
-    load();
+    let active = true;
+    getCurrentGym()
+      .then(async (currentGym) => {
+        const planRows = await listPlans(currentGym.id);
+        if (!active) return;
+        setGym(currentGym);
+        setPlans(planRows);
+        setGymForm({
+          name: currentGym.name,
+          timezone: currentGym.timezone,
+          currency: currentGym.currency,
+        });
+        setStatus("ready");
+      })
+      .catch((error) => {
+        if (!active) return;
+        setStatus("error");
+        setMessage(error.message || "Unable to load settings.");
+      });
+    return () => {
+      active = false;
+    };
   }, []);
 
   const updateGymField = (event) => {
@@ -106,6 +115,14 @@ export default function SettingsPage() {
   const togglePlan = async (plan) => {
     if (!gym || gym.role !== "owner") return;
 
+    if (
+      plan.active &&
+      !window.confirm(
+        `Deactivate ${plan.name}? It will no longer be offered to new members.`,
+      )
+    )
+      return;
+    setTogglingId(plan.id);
     setMessage("");
 
     try {
@@ -113,8 +130,15 @@ export default function SettingsPage() {
       setPlans((current) =>
         current.map((item) => (item.id === updated.id ? updated : item)),
       );
+      setStatus("ready");
+      setMessage(
+        `Membership plan ${updated.active ? "activated" : "deactivated"}.`,
+      );
     } catch (error) {
+      setStatus("error");
       setMessage(error.message || "Unable to update membership plan.");
+    } finally {
+      setTogglingId("");
     }
   };
 
@@ -132,13 +156,22 @@ export default function SettingsPage() {
 
       {message && (
         <p
-          className={status === "error" ? "form-feedback error" : "form-feedback"}
+          className={
+            status === "error" ? "form-feedback error" : "form-feedback"
+          }
           role="status"
         >
           {message}
         </p>
       )}
 
+      {status === "loading" && <Skeleton rows={2} />}
+      {dirty && (
+        <p className="unsaved-notice" role="status">
+          Unsaved changes · Save your workspace details or add the plan before
+          leaving.
+        </p>
+      )}
       <div className="settings-grid">
         <section className="app-panel">
           <div className="app-panel-heading">
@@ -149,52 +182,57 @@ export default function SettingsPage() {
           </div>
 
           <form className="module-form" onSubmit={saveGym}>
-            <label>
-              Gym name
-              <input
-                name="name"
-                value={gymForm.name}
-                onChange={updateGymField}
-                required
-                disabled={!canEdit}
-              />
-            </label>
-
-            <label>
-              Timezone
-              <select
-                name="timezone"
-                value={gymForm.timezone}
-                onChange={updateGymField}
-                disabled={!canEdit}
-              >
-                <option value="Asia/Kolkata">India Standard Time</option>
-                <option value="UTC">UTC</option>
-              </select>
-            </label>
-
-            <label>
-              Currency
-              <select
-                name="currency"
-                value={gymForm.currency}
-                onChange={updateGymField}
-                disabled={!canEdit}
-              >
-                <option value="INR">INR</option>
-                <option value="USD">USD</option>
-                <option value="GBP">GBP</option>
-                <option value="EUR">EUR</option>
-              </select>
-            </label>
-
-            <button
-              className="button button-primary"
-              type="submit"
-              disabled={!canEdit || status === "saving"}
+            <fieldset
+              className="form-fields"
+              disabled={status === "saving" || status === "loading"}
             >
-              Save settings
-            </button>
+              <label>
+                Gym name
+                <input
+                  name="name"
+                  value={gymForm.name}
+                  onChange={updateGymField}
+                  required
+                  disabled={!canEdit}
+                />
+              </label>
+
+              <label>
+                Timezone
+                <select
+                  name="timezone"
+                  value={gymForm.timezone}
+                  onChange={updateGymField}
+                  disabled={!canEdit}
+                >
+                  <option value="Asia/Kolkata">India Standard Time</option>
+                  <option value="UTC">UTC</option>
+                </select>
+              </label>
+
+              <label>
+                Currency
+                <select
+                  name="currency"
+                  value={gymForm.currency}
+                  onChange={updateGymField}
+                  disabled={!canEdit}
+                >
+                  <option value="INR">INR</option>
+                  <option value="USD">USD</option>
+                  <option value="GBP">GBP</option>
+                  <option value="EUR">EUR</option>
+                </select>
+              </label>
+
+              <button
+                className="button button-primary"
+                type="submit"
+                disabled={!canEdit || status === "saving"}
+              >
+                {status === "saving" ? "Saving…" : "Save settings"}
+              </button>
+            </fieldset>
           </form>
         </section>
 
@@ -210,7 +248,12 @@ export default function SettingsPage() {
             {plans.map((plan) => (
               <article className="plan-row" key={plan.id}>
                 <div>
-                  <strong>{plan.name}</strong>
+                  <strong>
+                    {plan.name}{" "}
+                    <Badge tone={plan.active ? "success" : "neutral"}>
+                      {plan.active ? "Active" : "Inactive"}
+                    </Badge>
+                  </strong>
                   <span>
                     {plan.duration_days} days ·{" "}
                     {formatMoney(plan.price, gym?.currency || "INR")}
@@ -220,63 +263,72 @@ export default function SettingsPage() {
                   className="text-button"
                   type="button"
                   onClick={() => togglePlan(plan)}
-                  disabled={!canEdit}
+                  disabled={!canEdit || Boolean(togglingId)}
                 >
-                  {plan.active ? "Deactivate" : "Activate"}
+                  {togglingId === plan.id
+                    ? "Updating…"
+                    : plan.active
+                      ? "Deactivate"
+                      : "Activate"}
                 </button>
               </article>
             ))}
           </div>
 
           <form className="module-form settings-plan-form" onSubmit={addPlan}>
-            <label>
-              Plan name
-              <input
-                name="name"
-                value={planForm.name}
-                onChange={updatePlanField}
-                required
-                disabled={!canEdit}
-              />
-            </label>
-
-            <div className="form-grid-two">
-              <label>
-                Duration in days
-                <input
-                  name="durationDays"
-                  type="number"
-                  min="1"
-                  max="3650"
-                  value={planForm.durationDays}
-                  onChange={updatePlanField}
-                  required
-                  disabled={!canEdit}
-                />
-              </label>
-
-              <label>
-                Price
-                <input
-                  name="price"
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  value={planForm.price}
-                  onChange={updatePlanField}
-                  required
-                  disabled={!canEdit}
-                />
-              </label>
-            </div>
-
-            <button
-              className="button button-secondary"
-              type="submit"
-              disabled={!canEdit || status === "saving"}
+            <fieldset
+              className="form-fields"
+              disabled={status === "saving" || status === "loading"}
             >
-              Add membership plan
-            </button>
+              <label>
+                Plan name
+                <input
+                  name="name"
+                  value={planForm.name}
+                  onChange={updatePlanField}
+                  required
+                  disabled={!canEdit}
+                />
+              </label>
+
+              <div className="form-grid-two">
+                <label>
+                  Duration in days
+                  <input
+                    name="durationDays"
+                    type="number"
+                    min="1"
+                    max="3650"
+                    value={planForm.durationDays}
+                    onChange={updatePlanField}
+                    required
+                    disabled={!canEdit}
+                  />
+                </label>
+
+                <label>
+                  Price
+                  <input
+                    name="price"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={planForm.price}
+                    onChange={updatePlanField}
+                    required
+                    disabled={!canEdit}
+                  />
+                </label>
+              </div>
+
+              <button
+                className="button button-secondary"
+                type="submit"
+                disabled={!canEdit || status === "saving"}
+              >
+                {status === "saving" ? "Saving…" : "Add membership plan"}
+              </button>
+            </fieldset>
           </form>
         </section>
       </div>
