@@ -1,7 +1,11 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { gsap } from "gsap";
 import { useGSAP } from "@gsap/react";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import LaunchIntro from "../../components/motion/LaunchIntro.jsx";
+import { shouldPlayLaunch } from "../../lib/launchSession.js";
+gsap.registerPlugin(ScrollTrigger);
 import CoreSculpture from "../../components/three/CoreSculpture.jsx";
 import DimensionalIcon from "../../components/three/DimensionalIcon.jsx";
 import ProductStage from "../../components/three/ProductStage.jsx";
@@ -35,30 +39,89 @@ const features = [
   ],
 ];
 export default function HomePage() {
-  const hero = useRef(null);
+  const hero = useRef(null),
+    page = useRef(null);
+  const [launch] = useState(shouldPlayLaunch);
   useGSAP(
     () => {
       const media = gsap.matchMedia();
       media.add("(prefers-reduced-motion: no-preference)", () => {
-        gsap
-          .timeline({
-            defaults: { duration: 0.6, ease: "power3.out", clearProps: "all" },
-          })
-          .from(".hero-eyebrow", { y: 12, opacity: 0 })
-          .from(".hero-line", { y: 22, opacity: 0, stagger: 0.07 }, 0.08)
+        const timeline = gsap.timeline({
+          delay: launch ? 0.4 : 0,
+          defaults: {
+            duration: 0.6,
+            ease: "power3.out",
+            clearProps: "transform,opacity",
+          },
+        });
+        if (launch)
+          timeline.from(
+            document.querySelector(".marketing-header"),
+            { y: -12, duration: 0.45 },
+            0,
+          );
+        timeline
+          .from(".hero-eyebrow", { y: 12 }, 0)
           .from(
-            ".hero-description, .hero-actions, .hero-footnote",
-            { y: 12, opacity: 0, stagger: 0.06 },
+            ".hero-line",
+            { yPercent: 112, stagger: 0.09, duration: 0.7 },
+            0.08,
+          )
+          .from(
+            ".hero-description,.hero-actions,.hero-footnote,.hero-scroll-cue",
+            { y: 14, stagger: 0.055 },
             0.3,
           )
-          .from(".hero-art", { y: 20, opacity: 0 }, 0.36);
+          .from(".hero-art", { y: 24, duration: 0.7 }, 0.16)
+          .from(
+            ".floating-module",
+            { y: 15, opacity: 0, stagger: 0.1, duration: 0.55 },
+            0.5,
+          );
+        const skipLaunch = () => timeline.progress(1);
+        window.addEventListener("ironcore:launch-skip", skipLaunch);
+        const product = page.current.querySelector(".product-stage");
+        gsap.from(product, {
+          y: 44,
+          duration: 0.75,
+          ease: "power3.out",
+          clearProps: "transform,opacity",
+          scrollTrigger: { trigger: product, start: "top 94%", once: true },
+        });
+        gsap.from(".product-strip>.container>span", {
+          y: 12,
+          opacity: 0,
+          stagger: 0.07,
+          duration: 0.45,
+          clearProps: "transform,opacity",
+          scrollTrigger: {
+            trigger: ".product-strip",
+            start: "top 94%",
+            once: true,
+          },
+        });
+        gsap.from(".cta-dimensional-mark", {
+          y: 24,
+          rotationY: -12,
+          opacity: 0.15,
+          duration: 0.8,
+          clearProps: "transform,opacity",
+          scrollTrigger: {
+            trigger: ".dimensional-cta",
+            start: "top 88%",
+            once: true,
+          },
+        });
+        return () =>
+          window.removeEventListener("ironcore:launch-skip", skipLaunch);
       });
       return () => media.revert();
     },
-    { scope: hero },
+    { scope: page },
   );
   return (
-    <div className="dimensional-home">
+    <div className="dimensional-home" ref={page}>
+      <LaunchIntro enabled={launch} />
       <section className="hero-section dimensional-hero" ref={hero}>
         <div className="hero-atmosphere" aria-hidden="true">
           <div className="hero-grid-lines" />
@@ -70,9 +133,15 @@ export default function HomePage() {
               management
             </span>
             <h1>
-              <span className="hero-line">Manage your gym members,</span>
-              <span className="hero-line">payments, and renewals</span>
-              <span className="hero-line">in one place.</span>
+              <span className="hero-line-mask">
+                <span className="hero-line">Manage your gym members,</span>
+              </span>
+              <span className="hero-line-mask">
+                <span className="hero-line">payments, and renewals</span>
+              </span>
+              <span className="hero-line-mask">
+                <span className="hero-line">in one place.</span>
+              </span>
             </h1>
             <p className="hero-description">
               Built for the way you move.
@@ -91,6 +160,10 @@ export default function HomePage() {
               <Icon name="shield" size={14} /> Members. Payments. Renewals. One
               clear routine.
             </p>
+            <a className="hero-scroll-cue" href="#product-preview">
+              <span aria-hidden="true">↓</span>
+              <span>Scroll to explore</span>
+            </a>
           </div>
           <div className="hero-art">
             <div className="sculpture-stage">
